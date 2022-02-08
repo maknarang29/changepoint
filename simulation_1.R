@@ -20,10 +20,8 @@ while (j<m) {
 x[1:tau_num[1]] = rnorm(tau_num[1],0,rlnorm(1,0,log(10)/2))
 x[tau_num[m]:n] = rnorm(n - tau_num[m]+1,0,rlnorm(1,0,log(10)/2))
 plot(x)
-
-
-
-
+library(changepoint)
+library(EnvCpt)
 fit<- cpt.var(data = x, method = "PELT")
 fit
 ncpts(fit)
@@ -56,7 +54,7 @@ simulation <- function(n){
   x[tau_num[m]:n] = rnorm(n - tau_num[m]+1,0,rlnorm(1,0,log(10)/2))
   fit<- cpt.var(data = x, method = "PELT")
   #return(fit,ncpts(fit))
-  return(plot(fit))
+  return(x)
 }
 
 
@@ -79,10 +77,11 @@ cumsumStat <- function(s,e,X){
   return(Xt)
 }
 
+
 binseg <- function(s,e,thresh,X){
   stopifnot(e-s>1)
   stat = cumsumStat(s,e,X)
-  b_0 = argmax(stat)
+  b_0 = which.max(stat)
   cpt <- c()
   if (stat[b_0] > thresh){
     cpt <- append(cpt,stat[b_0])
@@ -91,6 +90,11 @@ binseg <- function(s,e,thresh,X){
   }
   return(cpt)
 }
+
+which.max(data)
+
+
+
 
 
 
