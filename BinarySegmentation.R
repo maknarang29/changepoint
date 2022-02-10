@@ -27,3 +27,10 @@ binseg <- function(s,e,thresh,X){
   }
   return(cpt)
 }
+
+x1 <- rnorm(100,mean = (1:100)/20, sd = abs(rnorm(100)))
+x2 <- rnorm(100,mean = (100:1)/20,sd = abs(rnorm(100)))
+x <- c(x1,x2)
+
+cum <- cumsumStat(2,198,x)
+ thresh<- sqrt(2*log(length(x)))
