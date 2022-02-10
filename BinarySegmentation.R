@@ -28,9 +28,33 @@ binseg <- function(s,e,thresh,X){
   return(cpt)
 }
 
-x1 <- rnorm(100,mean = (1:100)/20, sd = abs(rnorm(100)))
-x2 <- rnorm(100,mean = (100:1)/20,sd = abs(rnorm(100)))
-x <- c(x1,x2)
 
-cum <- cumsumStat(2,198,x)
- thresh<- sqrt(2*log(length(x)))
+sig_1 <- abs(rnorm(100))
+sig_2 <- abs(rnorm(100))
+x1 <- rnorm(100,mean = (1:100)/20, sd = sig_1)
+x2 <- rnorm(100,mean = (100:1)/20,sd = sig_2)
+x <- c(x1**2,x2**2)
+sig <- c(sig_1,sig_2)
+plot(x)
+
+make_parts<- function(n,m){
+  part <- floor(n/m)
+  for (i in 1:m){
+    print()
+  }
+}
+
+
+simulation_for_mean <- function(n, parts){
+  part <- floor(n/parts)
+  sig_1 <- abs(rnorm(mid))
+  sig_2 <- abs(rnorm(n - mid))
+  x1 <-  
+}
+
+
+ negloglike<- function(data, std){
+   mu <- mean(data)
+   negloglike <- sum(((data - mu)/std)**2 + log(2*pi*(std**2)))
+   return(negloglike)
+ }
