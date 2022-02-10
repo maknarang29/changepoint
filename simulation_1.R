@@ -80,22 +80,23 @@ cumsumStat <- function(s,e,X){
 
 binseg <- function(s,e,thresh,X){
   stopifnot(e-s>1)
-  stat = cumsumStat(s,e,X)
-  b_0 = which.max(stat)
+  stat <- cumsumStat(s,e,X)
+  b_0 <- which.max(stat)
   cpt <- c()
   if (stat[b_0] > thresh){
     cpt <- append(cpt,stat[b_0])
-    binseg(s,b_0,thresh)
-    binseg(b_0+1,e,thresh)
+    binseg(s,b_0,thresh,X[s:b_0])
+    binseg((b_0+1),e,thresh,X[(b_0+1):e])
   }
   return(cpt)
 }
 
 which.max(data)
 
+data<- simulation(200)
+cumstat<- cumsumStat(2,198,data)
 
-
-
+thresh = sqrt(2*log(200))
 
 
 models <- c("mean","meancpt","meanar1","meanar2","meanar1cpt","meanar2cpt","trend","trendcpt","trendar1","trendar2","trendar1cpt","trendar2cpt")
