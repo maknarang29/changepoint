@@ -58,6 +58,14 @@ simulation <- function(n){
 }
 
 
+simulation_mean <- function(n,parts){
+  part <- floor(n/parts)
+  dat <- rnorm(part,(1:part)/(part/5),sd=rlnorm(part))
+  for (i in 2:parts){
+    dat <- c(dat,rnorm())
+  }
+}
+
 
 
 
