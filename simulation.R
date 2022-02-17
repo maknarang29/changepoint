@@ -8,9 +8,11 @@ plot(x)
 
 ## Normal Distribution with varied mean and variance
 
-x1 <- rnorm(100,mean = (1:100)/20, sd = abs(rnorm(100)))
-x2 <- rnorm(100,mean = (100:1)/20,sd = abs(rnorm(100)))
-x <- c(x1,x2)
+x1 <- rnorm(100,mean = (1:100)/20, sd = abs(rlnorm(100)))
+x2 <- rnorm(100,mean = (100:1)/20,sd = abs(rlnorm(100)))
+x3 <- rnorm(100,mean = 2*(1:100)/40, sd = abs(rlnorm(100)))
+x4 <- rnorm(100,mean = 2*(100:1)/40,sd = abs(rlnorm(100)))
+x <- c(x1,x2,x3,x4)
 plot(x)
 
 
