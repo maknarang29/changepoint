@@ -1,16 +1,19 @@
-lossfunc <- function(x, s, t){
-    mu <- mean(x);
-    sig <- sqrt(var(x));
+lossfunc <- function(x, s, t,sigma){
     stopifnot (t > s)
-    l <-  -((t-s)/2) * log( sig**2 ) -  ( x[(s+1) : t]**2 + (t-s-1)*mu**2 + 2*mu*sum(x[s+1:t]))/(2*sigma**2) # nolint
-    return(l)
+    data <- x[(s+1) : t]
+    mu <- mean(data)
+    n <- length(data)
+    l1 <-  -(t-s)/2 * log( sigma**2 ) - sum((data - mu)**2)/(2*sigma**2) 
+    l2 <-  -(n)/2 * log( sigma**2 ) - sum((data - mu)**2)/(2*sigma**2)
+    return(l1)
 }
 
-costfunc <- function(x, s, t) {
+costfunc <- function(x, s, t,sigma) {
     stopifnot(t > s);
-    sig <- sqrt(var(x));
-    summation <- sum(x[(s + 1) :t])
-    c <- (t-s)*log( sig**2 ) + (sum(sum(x**2) + (summation/(t-s))**2 - 2*x*summation/(t-s))) / (sig**2) # nolint
-    return(c)
+    data <- x[(s+1) : t]
+    summation <- sum(data)
+    n <- length(data)
+    c1 <- (t-s)*log(sigma) + ((sum( data**2 + (summation/(t-s))**2 - 2*data*summation/(t-s)))/(sigma**2)) 
+    c2 <- (n)*log(sigma) + ((sum( data**2 + (summation/(n))**2 - 2*data*summation/(n)))/(sigma**2)) 
+    return(c1)
 }
-costmeanvar <- function # nolint
