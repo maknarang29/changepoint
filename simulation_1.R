@@ -8,17 +8,18 @@ while (min(diff(tau))<30 ) {
 }
 
 x <- numeric(n)
-sig <- numeric(m)
+sig <- rlnorm(m,0,log(10)/2)
+mu<- rlnorm(m,0,log(10)/2)
 tau_num <- floor(tau)
 
 j = 1
 while (j<m) {
-  sig[j] <- rlnorm(1,0,log(10)/2)
-  x[tau_num[j]:tau_num[j+1]] = rnorm(tau_num[j+1] - tau_num[j]+1,0,sig[j])
+  x[tau_num[j]:tau_num[j+1]] = rnorm(tau_num[j+1] - tau_num[j]+1,mu[j+1],sig[j+1])
   j = j+1
 }
-x[1:tau_num[1]] = rnorm(tau_num[1],0,rlnorm(1,0,log(10)/2))
-x[tau_num[m]:n] = rnorm(n - tau_num[m]+1,0,rlnorm(1,0,log(10)/2))
+
+x[1:tau_num[1]] = rnorm(tau_num[1],mu[1],sig[1])
+x[tau_num[m]:n] = rnorm(n - tau_num[m]+1,mu[length(mu)],sig[length(sig))
 plot(x)
 library(changepoint)
 library(EnvCpt)
@@ -31,7 +32,7 @@ plot(fit)
 
 
 
-simulation <- function(n){
+simulation_var <- function(n){
   m = n/100
   
   tau <- runif(m,min =2,max = n-2)
@@ -41,73 +42,74 @@ simulation <- function(n){
   }
   
   x <- numeric(n)
-  sig <- numeric(m)
+  sig <- rlnorm(m,0,log(10)/2)
   tau_num <- floor(tau)
   
   j = 1
   while (j<m) {
-    sig[j] <- rlnorm(1,0,log(10)/2)
     x[tau_num[j]:tau_num[j+1]] = rnorm(tau_num[j+1] - tau_num[j]+1,0,sig[j])
     j = j+1
   }
-  x[1:tau_num[1]] = rnorm(tau_num[1],0,rlnorm(1,0,log(10)/2))
-  x[tau_num[m]:n] = rnorm(n - tau_num[m]+1,0,rlnorm(1,0,log(10)/2))
-  fit<- cpt.var(data = x, method = "PELT")
+  x[1:tau_num[1]] = rnorm(tau_num[1],0,sig[1])
+  x[tau_num[m]:n] = rnorm(n - tau_num[m]+1,0,sig[length(sig)])
+  #fit<- cpt.var(data = x, method = "PELT")
   #return(fit,ncpts(fit))
-  return(x)
+  return(list(x,tau_num,sig))
 }
 
 
-simulation_mean <- function(n,parts){
-  part <- floor(n/parts)
-  dat <- rnorm(part,(1:part)/(part/5),sd=rlnorm(part))
-  for (i in 2:parts){
-    dat <- c(dat,rnorm())
+
+simulation_mean <- function(n){
+  m = n/100
+  
+  tau <- runif(m,min =2,max = n-2)
+  tau <- sort(tau)
+  while (min(diff(tau))<30 ) {
+    tau <- sort(runif(n = m,1,n))
   }
+  
+  x <- numeric(n)
+  mu<- rlnorm(m,0,log(10)/2)
+  tau_num <- floor(tau)
+  
+  j = 1
+  while (j<m) {
+    x[tau_num[j]:tau_num[j+1]] = rnorm(tau_num[j+1] - tau_num[j]+1,mu[j],1)
+    j = j+1
+}
+
+  x[1:tau_num[1]] = rnorm(tau_num[1],mu[1],1)
+  x[tau_num[m]:n] = rnorm(n - tau_num[m]+1,mu[length(mu)],1)
+  #fit<- cpt.var(data = x, method = "PELT")
+  #return(fit,ncpts(fit))
+  return(list(x,tau_num,mu))
 }
 
 
+simulation_meanvar <- function(n){
+  m = n/100
 
-
-cumsumStat <- function(s,e,X){
-  stopifnot(e>s)
-  n = e-s+1
-  ind <- 1
-  b <- s
-  Xt <- numeric(e-s)
-  while (b<e) {
-    Xt[ind] = sqrt((e-b)/(n*(b-s+1)))*sum(X[s:b]) - sqrt((b-s+1)/(n*(e-b)))*sum(X[(b+1):e])
-    #print(sqrt((e-b)/(n*(b-s+1)))*sum(X[s:b]) - sqrt((b-s+1)/(n*(e-b)))*sum(X[(b+1):e]))
-    #print(b)
-    b = b+1
-    ind = ind + 1
+  tau <- runif(m,min =2,max = n-2)
+  tau <- sort(tau)
+  while (min(diff(tau))<30 ) {
+    tau <- sort(runif(n = m,1,n))
   }
-  return(Xt)
-}
 
+  x <- numeric(n)
+  sig <- rlnorm(m,0,log(10)/2)
+  mu<- rlnorm(m,0,log(10)/2)
+  tau_num <- floor(tau)
 
-binseg <- function(s,e,thresh,X){
-  stopifnot(e-s>1)
-  stat <- cumsumStat(s,e,X)
-  b_0 <- which.max(stat)
-  cpt <- c()
-  if (stat[b_0] > thresh){
-    cpt <- append(cpt,stat[b_0])
-    binseg(s,b_0,thresh,X[s:b_0])
-    binseg((b_0+1),e,thresh,X[(b_0+1):e])
+  j = 1
+  while (j<m) {
+    x[tau_num[j]:tau_num[j+1]] = rnorm(tau_num[j+1] - tau_num[j]+1,mu[j+1],sig[j+1])
+    j = j+1
   }
-  return(cpt)
+
+  x[1:tau_num[1]] = rnorm(tau_num[1],mu[1],sig[1])
+  x[tau_num[m]:n] = rnorm(n - tau_num[m]+1,mu[length(mu)],sig[length(sig)])
+  return(list(x,tau_num,mu,sig))
 }
-
-which.max(data)
-
-data<- simulation(200)
-cumstat<- cumsumStat(2,198,data)
-
-thresh = sqrt(2*log(200))
-
-
-models <- c("mean","meancpt","meanar1","meanar2","meanar1cpt","meanar2cpt","trend","trendcpt","trendar1","trendar2","trendar1cpt","trendar2cpt")
 
 
 

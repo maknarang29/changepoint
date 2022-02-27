@@ -17,3 +17,29 @@ costfunc <- function(x, s, t,sigma) {
     c2 <- (n)*log(sigma) + ((sum( data**2 + (summation/(n))**2 - 2*data*summation/(n)))/(sigma**2)) 
     return(c1)
 }
+
+
+
+costfunc_meanvar <- function(y,s,t){
+    ys <- sum(y)
+    l <- (t-s)
+    C <- l*( log( sum( (y - (ys/l))**2 )) +1 )
+    return(C)
+ }
+
+PELT<- function(data){
+    beta <- floor(runif(1,1,10))
+    K <- 0
+     
+
+}
+
+
+F <- c()
+for (t in 1:length(data)) {
+   F[t] <- min(F[s] + costfunc_meanvar(data,s,t) + beta)
+
+}
+
+
+
