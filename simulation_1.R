@@ -62,7 +62,7 @@ simulation_var <- function(n){
 simulation_mean <- function(n){
   m = n/100
   
-  tau <- runif(m,min =2,max = n-2)
+  tau <- runif(m,min =30,max = n-2)
   tau <- sort(tau)
   while (min(diff(tau))<30 ) {
     tau <- sort(runif(n = m,1,n))

@@ -35,11 +35,33 @@ PELT<- function(data){
 }
 
 
-F <- c()
+F_ <- c()
+cp_ <- c()
+m_<- c()
 for (t in 1:length(data)) {
-   F[t] <- min(F[s] + costfunc_meanvar(data,s,t) + beta)
+    F_[t] <- F(s,t)
+    cp_[t] <- cp(s,t)
+    m_[t] <- m[cp[t]]+1
 
 }
 
+
+F <- function(s,t){
+    if (t == 0){
+        return 0
+    }
+    else{
+        return(min(F(s) + costfunc_meanvar(data,s,t) + beta))
+    }
+}
+
+cp <- function(s,t){
+    if (t == 0){
+        return 0
+    }
+    else{
+        return(which.min(cp(s) + costfunc_meanvar(data,s,t) + beta))
+    }
+}
 
 
