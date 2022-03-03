@@ -1,7 +1,7 @@
 n=2000
 m = n/100
 
-tau <- runif(m,min =2,max = n-2)
+tau <- runif(m,min =30,max = n-30)
 tau <- sort(tau)
 while (min(diff(tau))<30 ) {
   tau <- sort(runif(n = m,1,n))
@@ -35,7 +35,7 @@ plot(fit)
 simulation_var <- function(n){
   m = n/100
   
-  tau <- runif(m,min =2,max = n-2)
+  tau <- runif(m,min =30,max = n-30)
   tau <- sort(tau)
   while (min(diff(tau))<30 ) {
     tau <- sort(runif(n = m,1,n))
@@ -62,7 +62,7 @@ simulation_var <- function(n){
 simulation_mean <- function(n){
   m = n/100
   
-  tau <- runif(m,min =30,max = n-2)
+  tau <- runif(m,min =30,max = n-30)
   tau <- sort(tau)
   while (min(diff(tau))<30 ) {
     tau <- sort(runif(n = m,1,n))
@@ -89,7 +89,7 @@ simulation_mean <- function(n){
 simulation_meanvar <- function(n){
   m = n/100
 
-  tau <- runif(m,min =2,max = n-2)
+  tau <- runif(m,min =30,max = n-30)
   tau <- sort(tau)
   while (min(diff(tau))<30 ) {
     tau <- sort(runif(n = m,1,n))
@@ -111,7 +111,72 @@ simulation_meanvar <- function(n){
   return(list(x,tau_num,mu,sig))
 }
 
+simulation_trend <- function(n){
+  m = n/100
 
+  tau <- runif(m,min = 30,max = n-30)
+  tau <- sort(tau)
+  while (min(diff(tau))<30 ) {
+    tau <- sort(runif(n = m,1,n))
+  }
+
+  x <- numeric(n)
+  sig <- rlnorm(m,0,log(10)/2) 
+  alpha <- rnorm(m,0,runif(1,20,50))
+  beta <- rnorm(m,0,runif(1,0.1,1.5))
+  tau_num <- floor(tau)
+
+  j = 1
+  while (j<m) {
+    index <- 1:(tau_num[j+1] - tau_num[j]+1)
+    mean <- alpha[j+1] + beta[j+1]*index
+    x[tau_num[j]:tau_num[j+1]] = rnorm(tau_num[j+1] - tau_num[j]+1,mean,sig[j+1])
+    j = j+1
+  }
+
+  index <- 1:(tau_num[1])
+  mean <- alpha[1] + beta[1]*index
+  x[1:tau_num[1]] = rnorm(tau_num[1],mean,sig[1])
+  index <- 1:(n - tau_num[m]+1)
+  mean <- alpha[length(sig)] + beta[length(sig)]*index
+  x[tau_num[m]:n] = rnorm(n - tau_num[m]+1,mean,sig[length(sig)])
+  return(list(x,tau_num,alpha,beta,sig))
+}
+
+data <- simulation_trend(3500)
+plot(data[[1]]) 
+
+
+n=2000
+m = n/100
+
+tau <- runif(m,min = 30,max = n-30)
+tau <- sort(tau)
+while (min(diff(tau))<30 ) {
+  tau <- sort(runif(n = m,1,n))
+}
+
+x <- numeric(n)
+sig <- rlnorm(m,0,log(10)/2) 
+alpha <- rnorm(m,0,20)
+beta <- rnorm(m,0,0.25)
+tau_num <- floor(tau)
+
+j = 1
+while (j<m) {
+  index <- 1:(tau_num[j+1] - tau_num[j]+1)
+  mean <- alpha[j+1] + beta[j+1]*index
+  x[tau_num[j]:tau_num[j+1]] = rnorm(tau_num[j+1] - tau_num[j]+1,mean,sig[j+1])
+  j = j+1
+}
+
+index <- 1:(tau_num[1])
+mean <- alpha[1] + beta[1]*index
+x[1:tau_num[1]] = rnorm(tau_num[1],mean,sig[1])
+index <- 1:(n - tau_num[m]+1)
+mean <- alpha[length(sig)] + beta[length(sig)]*index
+x[tau_num[m]:n] = rnorm(n - tau_num[m]+1,mean,sig[length(sig)])
+plot(x)
 
 rm(n)
 rm(m)
