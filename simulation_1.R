@@ -143,6 +143,88 @@ simulation_trend <- function(n){
   return(list(x,tau_num,alpha,beta,sig))
 }
 
+
+simulation_distribution <- function(n){
+    m = n/100
+
+  tau <- runif(m,min = 30,max = n-30)
+  tau <- sort(tau)
+  while (min(diff(tau))<30 ) {
+    tau <- sort(runif(n = m,1,n))
+  }
+  tau <- floor(tau)
+  dist_ind <- floor(runif(m,1,6))
+  x <- numeric(n)
+  for (i in 1:length(dist_ind)){
+    if (dist_ind[i] == 1){
+      shape_1 <- runif(1,0,10)
+      shape_2 <- runif(1,0,10)
+      if(i == 1){
+        x[1:tau[1]] <- (-1)**sample(1:2,1)*runif(1,8,18)*rnorm(tau[1],shape_1,shape_2)
+      }
+      else if(i == m){
+        x[tau[m]:n] <- (-1)**sample(1:2,1)*runif(1,8,18)*rnorm(n-tau[m]+1,shape_1,shape_2)
+      }
+      else{
+        x[tau[i]:tau[i+1]] <- (-1)**sample(1:2,1)*runif(1,8,18)*rnorm(tau[i+1]-tau[i]+1, shape_1,shape_2)
+      }
+    }
+    else if(dist_ind[i] == 2){
+      location<- runif(1,0,10)
+      scale <- runif(1,0,10)
+      if(i == 1){
+        x[1:tau[1]] <- rcauchy(tau[1],location,scale)
+      }
+      else if(i == m){
+        x[tau[m]:n] <- rcauchy(n-tau[m]+1,location,scale)
+      }
+      else{
+        x[tau[i]:tau[i+1]] <- rcauchy(tau[i+1]-tau[i]+1, location,scale)
+      }
+    }
+    else if(dist_ind[i] == 3){
+      df<- runif(1,0,10)
+      if(i == 1){
+        x[1:tau[1]] <- rchisq(tau[1],df)
+      }
+      else if(i == m){
+        x[tau[m]:n] <- rchisq(n-tau[m]+1,df)
+      }
+      else{
+        x[tau[i]:tau[i+1]] <- rchisq(tau[i+1]-tau[i]+1, df)
+      }
+    }
+    else if(dist_ind[i] == 4){
+      rate<- runif(1,0,10)
+      if(i == 1){
+        x[1:tau[1]] <- (-1)**sample(1:2,1)*runif(1,8,18)*rexp(tau[1],rate)
+      }
+      else if(i == m){
+        x[tau[m]:n] <- (-1)**sample(1:2,1)*runif(1,8,18)*rexp(n-tau[m]+1,rate)
+      }
+      else{
+        x[tau[i]:tau[i+1]] <- (-1)**sample(1:2,1)*runif(1,8,18)*rexp(tau[i+1]-tau[i]+1, rate)
+      }
+    }
+    else if (dist_ind[i] == 5){
+      lambda <- runif(1,0,10)
+      if(i == 1){
+        x[1:tau[1]] <- rpois(tau[1],lambda)
+      }
+      else if(i == m){
+        x[tau[m]:n] <- rpois(n-tau[m]+1,lambda)
+      }
+      else{
+        x[tau[i]:tau[i+1]] <- rpois(tau[i+1]-tau[i]+1,lambda)
+      }
+    }
+  }
+  x[which(x>100)] = rnorm(length(x[x>100]), 0 ,log(10)/2)
+  x[which(x< (-100))] = rnorm(length(x[x< (-100)]), 0 ,log(10)/2)
+  return(x)
+}
+
+
 data <- simulation_trend(3500)
 plot(data[[1]]) 
 
@@ -155,12 +237,106 @@ tau <- sort(tau)
 while (min(diff(tau))<30 ) {
   tau <- sort(runif(n = m,1,n))
 }
-
+tau <- floor(tau)
+dist_ind <- floor(runif(m,1,6))
 x <- numeric(n)
+for (i in 1:length(dist_ind)){
+  if (dist_ind[i] == 1){
+    shape_1 <- runif(1,0,10)
+    shape_2 <- runif(1,0,10)
+    if(i == 1){
+      x[1:tau[1]] <- (-1)**sample(1:2,1)*runif(1,8,18)*rnorm(tau[1],shape_1,shape_2)
+    }
+    else if(i == m){
+      x[tau[m]:n] <- (-1)**sample(1:2,1)*runif(1,8,18)*rnorm(n-tau[m]+1,shape_1,shape_2)
+    }
+    else{
+      x[tau[i]:tau[i+1]] <- (-1)**sample(1:2,1)*runif(1,8,18)*rnorm(tau[i+1]-tau[i]+1, shape_1,shape_2)
+    }
+  }
+  else if(dist_ind[i] == 2){
+    location<- runif(1,0,10)
+    scale <- runif(1,0,10)
+    if(i == 1){
+      x[1:tau[1]] <- rcauchy(tau[1],location,scale)
+    }
+    else if(i == m){
+      x[tau[m]:n] <- rcauchy(n-tau[m]+1,location,scale)
+    }
+    else{
+      x[tau[i]:tau[i+1]] <- rcauchy(tau[i+1]-tau[i]+1, location,scale)
+    }
+  }
+  else if(dist_ind[i] == 3){
+    df<- runif(1,0,10)
+    if(i == 1){
+      x[1:tau[1]] <- rchisq(tau[1],df)
+    }
+    else if(i == m){
+      x[tau[m]:n] <- rchisq(n-tau[m]+1,df)
+    }
+    else{
+      x[tau[i]:tau[i+1]] <- rchisq(tau[i+1]-tau[i]+1, df)
+    }
+  }
+  else if(dist_ind[i] == 4){
+    rate<- runif(1,0,10)
+    if(i == 1){
+      x[1:tau[1]] <- (-1)**sample(1:2,1)*runif(1,8,18)*rexp(tau[1],rate)
+    }
+    else if(i == m){
+      x[tau[m]:n] <- (-1)**sample(1:2,1)*runif(1,8,18)*rexp(n-tau[m]+1,rate)
+    }
+    else{
+      x[tau[i]:tau[i+1]] <- (-1)**sample(1:2,1)*runif(1,8,18)*rexp(tau[i+1]-tau[i]+1, rate)
+    }
+  }
+  else if (dist_ind[i] == 5){
+    lambda <- runif(1,0,10)
+    if(i == 1){
+      x[1:tau[1]] <- rpois(tau[1],lambda)
+    }
+    else if(i == m){
+      x[tau[m]:n] <- rpois(n-tau[m]+1,lambda)
+    }
+    else{
+      x[tau[i]:tau[i+1]] <- rpois(tau[i+1]-tau[i]+1,lambda)
+    }
+  }
+}
+x[which(x>100)] = rnorm(length(x[x>100]), 0 ,log(10)/2)
+x[which(x< (-100))] = rnorm(length(x[x< (-100)]), 0 ,log(10)/2)
+
+  plot(x)
+  distribution<- function(n)
+
+
+
+
+rm(x)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 sig <- rlnorm(m,0,log(10)/2) 
 alpha <- rnorm(m,0,20)
 beta <- rnorm(m,0,0.25)
-tau_num <- floor(tau)
 
 j = 1
 while (j<m) {
