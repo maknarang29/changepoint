@@ -225,6 +225,9 @@ simulation_distribution <- function(n){
 }
 
 
+
+
+
 data <- simulation_trend(3500)
 plot(data[[1]]) 
 
@@ -242,8 +245,8 @@ dist_ind <- floor(runif(m,1,6))
 x <- numeric(n)
 for (i in 1:length(dist_ind)){
   if (dist_ind[i] == 1){
-    shape_1 <- runif(1,0,10)
-    shape_2 <- runif(1,0,10)
+    shape_1 <- runif(1,2,10)
+    shape_2 <- runif(1,2,10)
     if(i == 1){
       x[1:tau[1]] <- (-1)**sample(1:2,1)*runif(1,8,18)*rnorm(tau[1],shape_1,shape_2)
     }
@@ -255,8 +258,8 @@ for (i in 1:length(dist_ind)){
     }
   }
   else if(dist_ind[i] == 2){
-    location<- runif(1,0,10)
-    scale <- runif(1,0,10)
+    location<- runif(1,2,10)
+    scale <- runif(1,2,10)
     if(i == 1){
       x[1:tau[1]] <- rcauchy(tau[1],location,scale)
     }
@@ -268,7 +271,7 @@ for (i in 1:length(dist_ind)){
     }
   }
   else if(dist_ind[i] == 3){
-    df<- runif(1,0,10)
+    df<- runif(1,10,40)
     if(i == 1){
       x[1:tau[1]] <- rchisq(tau[1],df)
     }
@@ -282,6 +285,7 @@ for (i in 1:length(dist_ind)){
   else if(dist_ind[i] == 4){
     rate<- runif(1,0,10)
     if(i == 1){
+      
       x[1:tau[1]] <- (-1)**sample(1:2,1)*runif(1,8,18)*rexp(tau[1],rate)
     }
     else if(i == m){
@@ -308,7 +312,7 @@ x[which(x>100)] = rnorm(length(x[x>100]), 0 ,log(10)/2)
 x[which(x< (-100))] = rnorm(length(x[x< (-100)]), 0 ,log(10)/2)
 
   plot(x)
-  distribution<- function(n)
+
 
 
 
