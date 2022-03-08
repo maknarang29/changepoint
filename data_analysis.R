@@ -42,3 +42,6 @@ load.dataset <- function(filename){
 
 dat <- load.dataset(loc_rel)
 plot(dat)
+
+
+source("simulation_1.R")

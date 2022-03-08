@@ -19,7 +19,7 @@ while (j<m) {
 }
 
 x[1:tau_num[1]] = rnorm(tau_num[1],mu[1],sig[1])
-x[tau_num[m]:n] = rnorm(n - tau_num[m]+1,mu[length(mu)],sig[length(sig))
+x[tau_num[m]:n] = rnorm(n - tau_num[m]+1,mu[length(mu)],sig[length(sig)])
 plot(x)
 library(changepoint)
 library(EnvCpt)
@@ -321,19 +321,14 @@ rm(x)
 
 
 
+vardat<- simulation_var(1000)
+plot(vardat[[1]])
 
+a <- cpt.var(vardat[[1]],method = "PELT")
+plot(a)
+abline(v = vardat[[2]])
 
-
-
-
-
-
-
-
-
-
-
-
+vardat[[2]]
 
 
 
