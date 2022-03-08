@@ -1,0 +1,160 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{edmaths}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{amssymb}
+\newcommand\tab[1][0.4cm]{\hspace*{#1}}
+\usepackage[document]{ragged2e}
+
+\title{Change Point Analysis}
+\author{Manak Narang}
+
+\begin{document}
+\maketitle
+\section{Abstract}
+\section{Introduction}
+Changepoints are considered to be those points in a data sequence where we observe a change in statistical properties such as change in mean, variance or distribution in the statistical properties, such as a change in mean, variance or distribution. Assume we have timeseries data $\textbf{X} = x_{1},x_{2}...x_{n}$. Our timeseries data will have $m$ changepoints with locations $\tau_{1:m} = (\tau_{1},\tau_{2}...\tau_{m})$ where each $\tau_{i}$ is an integer between 1 to n-1. Assume $\tau_{i}$ is the $i^{th}$ changepoint so that $\tau_{1}<\tau_{2}<...\tau_{m}$. Given $m$ changepoints we have $m+1$ partitions. The task is to subdivide $\textbf{X}$ into sub intervals such that a partition \textbf{P} of an interval \textbf{X} is a set of \textit{M} blocks.
+$$\textbf{P}(X) = \{\tau_{m},m\in\mathcal{M}\},\quad \mathcal{M} \equiv \{1,2,... M\}  $$
+Where the blocks $Y_{m}$ are subsets of \textbf{X} $$ \tau_{m} = \{{X_{n}|n\in\{1,2...n\}}\}$$
+satisfying the properties $\bigcup_{m} Y_{m} = X$ and $Y_{m} \bigcap Y_{m^{'}} = \phi$ if $m \neq m^{'}$
+The blocks $Y_{m}$ and $Y_{m^{'}}$ are supposed to have no overlaps since these last elements of the blocks are changepoints. Another property of these blocks is connectedness i.e. no gaps between the datapoints comprising a given block. The block must contain an interval of the timeseries sequence. 
+\subsection{Applications}
+\subsection{Methods}
+There are essentially two types of approaches for detecting unknown change points under a parametric design: the model selection method and the traditional hypothesis testing method. Model selection or exact segmentation methods generally include two elements, a cost function and an optimization algorithm. The computational complexity depends on the complexity of data and the number of change points. In contrast, the approximate segmentation methods have significantly less computational cost when there are more change points. Here, we follow in the direction of the approximate segmentation methods.
+
+
+\section{changepoint}
+Let $x_{1},x_{2},x_{3}...x_{n}$ be a sequence of independant normal random variables with parameters $(\mu_{1},\sigma^{2}_{1}),(\mu_{2},\sigma^{2}_{2}),(\mu_{3},\sigma^{2}_{3})...(\mu_{n},\sigma^{2}_{n})$ respectively.
+Changepoints on this dataset can be detected based upon different statistics. The following are the changepoint methods that will be discussed 
+\begin{itemize}
+    \item Change in mean
+    \item Change in variance
+    \item Change in meanvar
+    \item Change in trend
+\end{itemize}
+\subsection{Change in mean}
+For a given timeseries data, we have the null hypothesis $H_{0}$ as
+$$H_{0} : \mu_{1} = \mu_{2} = \cdots = \mu_{n} = \mu$$
+\begin{center}
+    vs
+\end{center}  
+$$H_{1} : \mu_{1} = \cdots = \mu_{k} \neq \mu_{k+1} \cdots \mu_{n}$$
+As $\sigma$ is known, we define the loss functions:\\
+Under $H_{0}$ we have: \\
+$$L_{0}(\mu) = \frac{1}{(\sqrt{2\pi})^{n}} e^{\frac{-\sum_{i=1}^{k} (x_{i} - \mu_{n})^{2}}{2}}$$
+and the MLEs of $\mu$ is,
+$$\hat{\mu} = \Bar{x} =\frac{1}{n} \sum_{i=1}^{n} x_{i}$$
+Under $H_{1}$, the likelihood function is: \\
+$$L_{1} (\mu_{1},\mu_{n}) = \frac{1}{(\sqrt{2\pi})^{n}} e^{\frac{-(\sum_{i=1}^{k} (x_{i} - \mu_{1})^{2} + \sum_{i=k+1}^{n} (x_{i} - \mu_{n})^{2})}{2}}$$
+MLEs of $\mu_{1}$ and $\mu_{n}$ are
+$$\hat{\mu_{1}} = \Bar{x}_{k} = \frac{1}{k}\sum_{i=1}^{k} x_{i}$$
+and
+$$\hat{\mu_{n}} = \Bar{x}_{n-k} = \frac{1}{n-k}\sum_{i=k+1}^{n}x_{i}$$
+In case of unknown variance:
+$$\hat{\sigma}^{2} = \frac{1}{n}[\sum_{i=1}^{k} (\Bar{x}_{i} - \Bar{x}_{k})^{2} + \sum_{i=k+1}^{n} (\Bar{x}_{i} - \Bar{x}_{n-k})^{2} ]$$
+\subsubsection{Binary Segmentation}
+Binary Segmentation is a recursive sequential process to detect change points on a timeseries. It begins by applying a single change point method to the whole data, if a change point is detected on the whole data then as the name suggests the data is bifurcated with the change point acting as the bifurcation. The binary segmentation method is repeated on both the segments to find further change points. \\
+We test if a $\tau$ exists that satisfies 
+$$C(y_{1:\tau}) + C(y_{\tau + 1: n}) + \beta < C(y_{1:n})$$
+CUMSUM statistic which is the inner product between the vector $(X_{s},...,X_{e})$ and a particular vector of contrast is important for both Binary Segmentation and Wild Binary Segmentation. This acts as a cost function for detection of changepoint
+$$\Tilde{X}^{b}_{s,e} = \sqrt{\frac{e-b}{n(b-s+1)}} \sum_{t=s}^{b} X_{t} - \sqrt{\frac{b-s+1}{n(e-b)}}\sum_{t=b+1}^{e}X_{t}$$ where $s \leq b < e $ with $n = e - s + 1$. 
+
+
+\begin{algorithm}
+\caption{Binary Segmentation}\label{alg:cap}
+\textbf{function} BinSeg($s,e,\tau$)
+\begin{algorithmic}
+\If{$e - s < 1$}
+        \State $Stop$
+    \Else
+        \State$b_{0} := argmax_{b\in \{s,...,e-1\}} |\Tilde{X_{s,e}^{b}}|$
+        \If{ $|\Tilde{X}^{b_{0}}_{s,e}| > \tau$}
+            \State add $b_0$ to set of estimated change points
+            \State BinSeg($s,b_{0},\tau$)
+            \State BinSeg($b_{0}+1,e,\tau$)
+        \Else
+            \State $Stop$
+            \EndIf
+        \EndIf
+\end{algorithmic}
+\end{algorithm}
+\subsubsection{Optimal Partitioning}
+Optimal Partitioning is a $O(N^{2})$ recursive algorithm that finds the optimum partitions. The aim is to minimise 
+$$\sum_{i = 1}^{m+1} [C(y_{(\tau_{i-1}+1) : \tau_{i}} + \beta] $$
+
+\begin{algorithm}
+\caption{Optimal Partitioning}\label{alg:cap}
+
+\textbf{input}: A data set of form $y_{1:n} = (y_{1},y_{2}...y_{n})$;\\
+\qquad \quad  A cost function $C(\cdot)$\\
+\qquad \quad  A penalty constant $\beta$ independent of number and location of changepoint\\
+\textbf{Initialise}: Let n = length of data and set $F(0) = -\beta, cp(0) = NULL$\\
+\begin{algorithmic}
+\For{$ \tau^{*} = {1,...,n}$}
+    \begin{enumerate}
+        \item Calculate $F(\tau^{*}) = min_{0 \leq \tau < \tau^{*}} [F(\tau) + C(y_{(\tau+1) : \tau^{*}}) + \beta]$
+        \item Let $\tau^{'} = argmin_{0 \leq \tau < \tau^{*}} [F(\tau) + C(y_{(\tau+1) : \tau^{*}}) + \beta]$
+        \item Set $ cp(\tau^{*}) = (cp(\tau^{'}) , \tau)$
+    \end{enumerate}
+\EndFor\\
+\Return : The changepoints recorded in $cp(n)$ 
+\end{algorithmic}
+\end{algorithm}
+
+
+\subsubsection{Wild Binary Segmentation}
+\subsubsection{PELT}
+\textbf{P}runed \textbf{E}xact \textbf{L}inear \textbf{T}ime Method is an updated version of Optimal Partitioning 
+\begin{algorithm}
+\caption{PELT}\label{alg:cap}
+
+\textbf{input}: A data set of form $y_{1:n} = (y_{1},y_{2}...y_{n})$;\\
+\qquad  \quad A cost function $C(\cdot)$\\
+\qquad \quad A penalty $\beta$ and a constant $K$ \\
+\textbf{output} Details of optimal segmentation of $y_{1:t} \quad \forall
+t \in {1,...,n}$ \\
+\tab Let $cp(0) = 0,rescp(0) = 0, F(0) = 0, m(0) = 0 and R_{1} = {0}$
+\begin{algorithmic}
+\For{$t \in {1,...,n}$}
+    \begin{enumerate}
+        \item Calculate $F(t) = min_{s\in R_{t}} [F(s) + C(y_{(s+1) : t}) + \beta]$
+        \item Let $cp(t) = argmin_{s\in R_{t}}{[F(t) = min_{s\in R_{t}} [F(s) + C(y_{(s+1) : t}) + \beta]}$
+        \item Let $ m(t) = m(cp(t)) + 1$
+        \item Set $rescp(t) = [rescp(cp(t)),cp(t)]$
+        \item Set $R_{t+1} = {s \in R_{t} : F(s) + C(y_{(s+1) : t}) < F(t)}$
+    \end{enumerate}
+\EndFor\\
+\Return : 
+    \begin{itemize}
+        \item $rescp(n)$: The changepoints in the optimal segmentation of $y_{1:n} \forall t \in {1,...n}$; 
+        \item $cp(t)$: The most recent changepoint in the optimal segmentation of $y_{1:t}$
+        \item $m(t)$: The number of changepoints in the optimal segmentation of $y_{1:t}$
+        \item $F(t)$: The optimal cost value of the optimal segmentation of $y_{1:t}$
+    \end{itemize}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Simulation Study}
+In order to study changepoint methods and different algorithms, A simulation of varying length $n = (100,200,...)$ can be created. For the linearly increasing data, $m = \frac{n}{100}$ changepoints are generated. These change points are distributed uniformly across $(30,n-30)$ so that the occurrences are not near the end and the beginning of the data which won't be detected. One of the constraints is that there are at least 30 data points between two consecutive changepoints. 
+\subsubsection{Mean}
+Given $n$ datapoints $m = \frac{n}{100}$ changepoints are uniformly distributed over a range of $(30,n-30)$.  
+The parameters of the simulated data i.e. mean is Normally distributed $\mu \thicksim \mathcal{N}(0,\frac{log(10)}{2})$ i.e. (mean = 0 and sd = $\frac{log(10)}{2}$ so that $95\%$ data is in the range $[]$. The data is imputed in between the set changepoints and a list of dataset, changepoint locations and respective means in the blocks is returned 
+\subsubsection{Variance}
+Following the same approach as simulation of mean change, $m = \frac{n}{100}$ change points are generated using a uniform distribution in the range $(30,n-30)$ for $n$ data points. Using a log normal distribution with mean 0 and standard deviation $\frac{log(10)}{2}$ $(\sigma \thicksim \mathcal{N}(0,\frac{log(10)}{2}))$ we can generate our standard deviation assuring the values to be positive. After imputing the values between the changepoints we return a list of dataset, changepoint locations and their respective standard deviations. 
+
+\subsubsection{MeanVar}
+Following a similar approach to Mean and Variance, In this particular simulation we change the two parameters mean $\mu$ and variance $\sigma^{2}$. Generating $m = \frac{n}{100}$ change points using a uniform distribution in the range $(30,n-30)$ for $n$ data points, $\mu$ and $\sigma$ are generated using lognormal distribution having mean 0 and std $\frac{log(10)}{2}$ i.e. $(\mu. \sigma \thicksim \mathcal{N}(0,\frac{log(10)}{2}))$. Assuring our positive values for mean and variance 
+
+
+\subsection{Trade off in accuracy and number of changepoints}
+An observation upon running the algorithm on the simulated was the number of changepoints being detected was always less than the number of changepoints being made and the accuracy also varies case to case
+
+
+%%%%%
+%\begin{thebibliography}{9}
+%\bibitem{url}
+%\href{https://link.springer.com/article/10.1007/s00362-020-01198-w}
+%\end{thebibliography}
+%%%%%
+\end{document}
