@@ -185,3 +185,18 @@ rm(tau_num)
 rm(sig)
 rm(j)
 rm(fit)
+
+
+meandata <- simulation_mean(2000)
+plot(meandata[[1]])
+meanmodel <- cpt.mean(meandata[[1]],method="PELT")
+plot(meanmodel)
+
+source("simulation_1.R")
+trenddata <- simulation_trend(2000)
+plot(trenddata[[1]])
+trendmodel <- envcpt(trenddata[[1]],model="trendcpt")
+plot(trendmodel)
+trendmodel
+trendmodel$trendcpt
+cpts(trendmodel$trendcpt)
