@@ -1,12 +1,4 @@
-
-
-
 library(rjson);
-loc_rel <- 'Quality_Control/quality_control_1/quality_control_1.json'
-dat <- fromJSON(file = loc_rel)
-plot(dat$series[[1]]$raw)
-
-
 
 load.dataset <- function(filename){
     data <- fromJSON(file = filename)
@@ -40,8 +32,11 @@ load.dataset <- function(filename){
 }
 
 
-dat <- load.dataset(loc_rel)
-plot(dat)
-
-
 source("simulation_1.R")
+
+data <- load("DBdata[asmt][v4.495].RData")
+colnames(data)
+length(ssb.data)
+ssb.data$CODICE[!is.na(ssb.data$CODICE)]
+rownames(ssb.data["CODICE"])
+1

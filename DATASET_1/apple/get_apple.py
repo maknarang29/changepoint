@@ -23,6 +23,7 @@ import os
 import yfinance
 import sys
 import time
+import datetime
 
 from functools import wraps
 from urllib.error import URLError
@@ -80,7 +81,7 @@ def get_aapl():
 
     # We use an offset here to catch potential off-by-one errors in yfinance.
     date_start_off = "1996-12-10"
-    date_end_off = "2004-05-17"
+    date_end_off = datetime.date.today()
 
     aapl = yfinance.download(
         "AAPL",
