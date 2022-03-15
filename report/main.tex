@@ -5,14 +5,20 @@
 \usepackage{algorithm}
 \usepackage{amssymb}
 \newcommand\tab[1][0.4cm]{\hspace*{#1}}
+\newcommand\sspace[2][0.2cm]{\hspace*{#1}}
 \usepackage[document]{ragged2e}
-
+\usepackage{amsmath}
 \title{Change Point Analysis}
 \author{Manak Narang}
-
+\usepackage{imakeidx}
+\makeindex
 \begin{document}
+
+
 \maketitle
+\tableofcontents
 \section{Abstract}
+\clearpage
 \section{Introduction}
 Changepoints are considered to be those points in a data sequence where we observe a change in statistical properties such as change in mean, variance or distribution in the statistical properties, such as a change in mean, variance or distribution. Assume we have timeseries data $\textbf{X} = x_{1},x_{2}...x_{n}$. Our timeseries data will have $m$ changepoints with locations $\tau_{1:m} = (\tau_{1},\tau_{2}...\tau_{m})$ where each $\tau_{i}$ is an integer between 1 to n-1. Assume $\tau_{i}$ is the $i^{th}$ changepoint so that $\tau_{1}<\tau_{2}<...\tau_{m}$. Given $m$ changepoints we have $m+1$ partitions. The task is to subdivide $\textbf{X}$ into sub intervals such that a partition \textbf{P} of an interval \textbf{X} is a set of \textit{M} blocks.
 $$\textbf{P}(X) = \{\tau_{m},m\in\mathcal{M}\},\quad \mathcal{M} \equiv \{1,2,... M\}  $$
@@ -20,12 +26,29 @@ Where the blocks $Y_{m}$ are subsets of \textbf{X} $$ \tau_{m} = \{{X_{n}|n\in\{
 satisfying the properties $\bigcup_{m} Y_{m} = X$ and $Y_{m} \bigcap Y_{m^{'}} = \phi$ if $m \neq m^{'}$
 The blocks $Y_{m}$ and $Y_{m^{'}}$ are supposed to have no overlaps since these last elements of the blocks are changepoints. Another property of these blocks is connectedness i.e. no gaps between the datapoints comprising a given block. The block must contain an interval of the timeseries sequence. 
 \subsection{Applications}
-\subsection{Methods}
-There are essentially two types of approaches for detecting unknown change points under a parametric design: the model selection method and the traditional hypothesis testing method. Model selection or exact segmentation methods generally include two elements, a cost function and an optimization algorithm. The computational complexity depends on the complexity of data and the number of change points. In contrast, the approximate segmentation methods have significantly less computational cost when there are more change points. Here, we follow in the direction of the approximate segmentation methods.
+\cleardoublepage
+\section{Methods}
+There are essentially two types of approaches for detecting unknown change points under a parametric design: the model selection method and the traditional hypothesis testing method. Model selection or exact segmentation methods generally include two elements, a cost function and an optimization algorithm. The computational complexity depends on the complexity of data and the number of change points. 
+In contrast, the approximate segmentation methods have significantly less computational cost when there are more change points. Here, we follow in the direction of the approximate segmentation methods.
+\subsection{Information Criterion}
+An information criterion is a a measure of the quality of a statistical model. It takes into account the Model fit and the Complexity of model
 
+Suppose $x_{1},x_{2}...x_{n}$ is a sequence of independent and identically distributed random variables with probability density function $f(\cdot|)$, where $f$ is a model with K parameters,i.e.
+$$Model(K) : \{f(\cdot|\theta): \theta = (\theta_{1},\theta_{2},...\theta_{K}),\theta \in \Theta_{K} \}$$ where the model has $K$ free parameters. The restricted parameter space is given by 
+$$\Theta(k) = \{ \theta \in \Theta_{K} | \theta_{k+1} = \theta_{k+2} = ... \theta_{K} = 0\}$$
+In order to test our changepoint hypothesis i.e. null hypothesis($H_{0}$) vs alternative hypothesis($H_{1}$) certain Information criteria are discussed 
+\subsubsection{Akaike Information Criterion (AIC)}
+Introduced in 1973, Akaike proposed the following information criterion,
+$$AIC(k) = -2\log L(\hat{\Theta}_{k}) + 2k, k=1,2,...,K.$$
+where $L(\Hat{\Theta}_{k}$ is the maximum likelihood for model (k). A model that minimizes the AIC is considered to be the most appropriate model though it is not an asymptotically consistent estimator.
+\subsubsection{Schwarz Information Criterion (SIC)}
+Schwarz Information Criterion is a modification of AIC, proposed in 1978:
+$$SIC(k) : -2\log L(\hat{\Theta}_{k}) + k \log n, k \in \{1,2,...,K\} $$
 
+The difference in AIC and SIC is the penalty term, In AIC i the penalty term is $2k$ whereas in SIC it is $2\log n$ making SIC asymptotically consistent estimator.
+\clearpage
 \section{changepoint}
-Let $x_{1},x_{2},x_{3}...x_{n}$ be a sequence of independant normal random variables with parameters $(\mu_{1},\sigma^{2}_{1}),(\mu_{2},\sigma^{2}_{2}),(\mu_{3},\sigma^{2}_{3})...(\mu_{n},\sigma^{2}_{n})$ respectively.
+Let $x_{1},x_{2},x_{3}...x_{n}$ be a sequence of independent normal random variables with parameters $(\mu_{1},\sigma^{2}_{1}),(\mu_{2},\sigma^{2}_{2}),(\mu_{3},\sigma^{2}_{3})...(\mu_{n},\sigma^{2}_{n})$ respectively.
 Changepoints on this dataset can be detected based upon different statistics. The following are the changepoint methods that will be discussed 
 \begin{itemize}
     \item Change in mean
@@ -48,18 +71,159 @@ $$\hat{\mu} = \Bar{x} =\frac{1}{n} \sum_{i=1}^{n} x_{i}$$
 Under $H_{1}$, the likelihood function is: \\
 $$L_{1} (\mu_{1},\mu_{n}) = \frac{1}{(\sqrt{2\pi})^{n}} e^{\frac{-(\sum_{i=1}^{k} (x_{i} - \mu_{1})^{2} + \sum_{i=k+1}^{n} (x_{i} - \mu_{n})^{2})}{2}}$$
 MLEs of $\mu_{1}$ and $\mu_{n}$ are
-$$\hat{\mu_{1}} = \Bar{x}_{k} = \frac{1}{k}\sum_{i=1}^{k} x_{i}$$
+$$\hat{\mu}_{1} = \Bar{x}_{k} = \frac{1}{k}\sum_{i=1}^{k} x_{i}$$
 and
-$$\hat{\mu_{n}} = \Bar{x}_{n-k} = \frac{1}{n-k}\sum_{i=k+1}^{n}x_{i}$$
+$$\hat{\mu}_{n} = \Bar{x}_{n-k} = \frac{1}{n-k}\sum_{i=k+1}^{n}x_{i}$$
 In case of unknown variance:
 $$\hat{\sigma}^{2} = \frac{1}{n}[\sum_{i=1}^{k} (\Bar{x}_{i} - \Bar{x}_{k})^{2} + \sum_{i=k+1}^{n} (\Bar{x}_{i} - \Bar{x}_{n-k})^{2} ]$$
-\subsubsection{Binary Segmentation}
+\subsection{Change in Variance}
+In case of Change in Variance, assuming the $\mu$ is known. We make the null hypothesis $H_{0}$as follows:
+$$ H_{0} : \sigma^{2}_{1} = \sigma^{2}_{2} = \cdots = \sigma^{2}_{n} = \sigma^{2} (unknown) $$ \\
+versus the alternative :\\ 
+$$H_{A} : \sigma^{2} = \cdots = \sigma^{2}_{k_{1}} \neq \sigma^{2}_{k_{1}+1} = \cdots = \sigma^{2}_{k_{2}} \neq \cdots \sigma^{2}_{n}$$
+where $k_{1},k_{2}... k_{q}$ are the changepoints.\\
+\subsubsection{Likelihood}
+Under $H_{0}$ the log likelihood is 
+$$ \log L_{0}(\sigma^{2}) = -\frac{n}{2} \log 2\pi\sigma^{2} - \frac{\sum_{i=1}^{n} (x_{i} - \mu)^{2}}{2\sigma^{2}}$$
+Let $\Hat{\sigma}^{2}$ be the MLE $\sigma^{2}$ under $H_{0}$ then
+$$\Hat{\sigma}^{2} = \frac{\sum^{n}_{i=1}(x_{i} - \mu)^{2}}{n}$$
+and the Maximum Likelihood is
+\begin{equation}
+    \log L_{0}(\Hat{\sigma}^{2}) = -\frac{n}{2}\log 2\pi -\frac{n}{2} \log \Hat{\sigma}^{2} -\frac{n}{2}
+\end{equation}
+
+Under $H_{1}$, the log likelihood is 
+$$    \log L_{1} (\sigma^{2}_{1},\sigma^{2}_{n}) =  -\frac{n}{2}\log 2\pi -\frac{k}{2} \log \sigma_{1}^{2} -\frac{n-k}{2} \log \sigma_{n}^{2} - \frac{\sum^{k}_{i=1} (x_{i} - \mu)^{2}}{2\sigma_{1}^{2}} - \frac{\sum^{n}_{i=k+1} (x_{i} - \mu)^{2}}{2\sigma_{n}^{2}}$$
+Let $\hat{\sigma_{1}}^{2},\hat{\sigma_{n}}^{2}$ be MLEs of $\sigma_{1}^{2},\sigma_{n}^{2}$, respectively, then:
+$$\hat{\sigma_{1}}^{2} = \frac{\sum^{k}_{i=1} (x_{i} - \mu)^{2}}{k}, \hat{\sigma_{n}}^{2} = \frac{\sum^{n}_{i=k+1} (x_{i} - \mu)^{2}}{n-k}$$
+The Maximum Log likelihood is 
+\begin{equation}
+    \log L_{1}(\hat{\sigma}_{1}^{2},\hat{\sigma}_{n}^{2}) = -\frac{n}{2}\log 2\pi -\frac{k}{2} \log \hat{\sigma}_{1}^{2} -\frac{n-k}{2} \log \hat{\sigma}_{n}^{2}
+\end{equation}
+
+\textbf{Likelihood Ratio Test Statistic} = $-2\log \frac{sup_{\theta}\mathcal{L}_{0}(\hat{\theta})}{sup_{\theta}\mathcal{L}_{1}(\hat{\theta})}$
+
+
+Using Eq (1) and Eq (2) in the Likelihood Ratio Test Statistic
+$$ \log \frac{L_{0}(\Hat{\sigma}^{2})}{L_{1}(\hat{\sigma}_{1}^{2},\hat{\sigma}_{n}^{2})} = \log L_{0}(\Hat{\sigma}^{2}) - \log L_{1}(\hat{\sigma}_{1}^{2},\hat{\sigma}_{n}^{2})$$
+$$\tab = (-\frac{n}{2}\log 2\pi -\frac{n}{2} \log \Hat{\sigma}^{2} -\frac{n}{2}) - (-\frac{n}{2}\log 2\pi -\frac{k}{2} \log \hat{\sigma}_{1}^{2} -\frac{n-k}{2} \log \hat{\sigma}_{n}^{2})$$
+$$= \frac{n}{2}\log 2\pi +\frac{k}{2} \log \hat{\sigma}_{1}^{2} +\frac{n-k}{2} \log \hat{\sigma}_{n}^{2} -\frac{n}{2}\log 2\pi -\frac{n}{2} \log \Hat{\sigma}^{2} -\frac{n}{2} $$
+$$= -\frac{n}{2} \log \Hat{\sigma}^{2} +\frac{k}{2} \log \hat{\sigma}_{1}^{2} +\frac{n-k}{2} \log \hat{\sigma}_{n}^{2}  $$
+$$ -2\log \frac{L_{0}(\Hat{\sigma}^{2})}{L_{1}(\hat{\sigma}_{1}^{2},\hat{\sigma}_{n}^{2})} = n \log \Hat{\sigma}^{2} -k \log \hat{\sigma}_{1}^{2} - (n-k) \log \hat{\sigma}_{n}^{2}$$
+$$\lambda_{n} = \{ \max_{1<k<n-1} [n \log \Hat{\sigma}^{2} -k \log \hat{\sigma}_{1}^{2} - (n-k) \log \hat{\sigma}_{n}^{2}] \}^{\frac{1}{2}}$$
+
+\subsection{Change in Mean and Variance}
+\subsection{Change in Trend}
+\subsubsection{Simple Linear Regression}
+Let $(x_{1},y_{1}),(x_{2},y_{2})...(x_{n},y_{n})$ be a sequence of observations. The task is to fit a model such that
+$$ y_{i} = \beta_{0} =\beta_{1}x_{i} + \epsilon_{i} ;\tab \forall i \in \{ 1,2,...n\} $$
+given $y_{i}$ holds following assumptions
+\begin{itemize}
+    \item uncorrelated
+    \item common variance $\sigma^{2}$
+    \item Expectation $E[y_{i}|x_{i}] = \beta_{0} + \beta_{1} x_{i}$
+\end{itemize}
+where $\beta_{0},\beta_{1}$ and $\sigma$ are unknown parameters\\ 
+\subsubsection{Least Squares Estimation}
+For a given dataset $(x_{1},y_{1}),(x_{2},y_{2})...(x_{n},y_{n})$, The method of least squares estimates unknown parameters $\beta_{0}$ and $\beta_{1}$ in $E[y_{i}|x_{i}]$ by the values $\hat{\beta_{0}}$ and $\hat{\beta_{1}}$
+$$Q = \sum_{i=1}^{n} \{ y_{i} - E[y_{i}|x_{i}]\}^{2} = \sum_{i=1}^{n}( y_{i} - \beta_{0} - \beta_{1}x_{i})^{2}$$
+Minimize Q w.r.t. $\beta_{0}$ and $\beta_{1}$ by solving $\frac{\partial Q}{\partial \beta_{0}} = 0$ and $\frac{\partial Q}{\partial \beta_{1}} = 0$.
+The Least Square Estimates $\hat{\beta_{0}}$ and $\hat{\beta_{1}}$ satisfy
+\begin{equation}
+    \sum_{i}(y_{i} - \hat{\beta_{0}} - \hat{\beta_{1}}x_{i}) = 0 
+\end{equation}
+\begin{equation}
+    \sum_{i}(y_{i} - \hat{\beta_{0}} - \hat{\beta_{1}}x_{i})x_{i} = 0
+\end{equation}
+From Eq (3) 
+\begin{equation*}
+    \sum_{i} y_{i} - n\hat{\beta}_{0} - \hat{\beta}_{1}\sum_{i}x_{i} = 0
+\end{equation*}
+Dividing by n and rearranging
+\begin{equation*}
+    \hat{\beta}_{0} = \Bar{y} - \hat{\beta}_{1} \Bar{x}
+\end{equation*}
+Subtracting $\Bar{x}$ times Eq (3) from Eq (4)
+\begin{equation*}
+    \hat{\beta}_{1} = \frac{\sum_{i}(x_{i} - \Bar{x})y_{i}}{\sum_{i}(x_{i} - \Bar{x})x_{i}}
+\end{equation*}
+Let 
+\begin{equation*}
+    S_{xx} = \sum x_{i}^{2} - (\sum x_{i})^{2}/n
+\end{equation*}
+\begin{equation*}
+    S_{xy} = \sum x_{i}y_{i} - \sum x_{i}\sum y_{i}/n
+\end{equation*}
+\begin{equation*}
+    S_{yy} = \sum y_{i}^{2} - (\sum y_{i})^{2}/n
+\end{equation*}
+Making
+\begin{equation}
+    \hat{\beta}_{1} = \frac{S_{xy}}{S_{xx}} 
+\end{equation}
+\begin{equation}
+    \hat{\beta}_{0} = \Bar{y} - \hat{\beta}_{1}\Bar{x}
+\end{equation}
+\textbf{Hypothesis}\\
+A Simple Linear Regression model\\
+$$y_{i} = \beta_{0} + \beta_{1}x_[i] + \epsilon_{i}; \tab i\in \{1,2,...n\}$$
+Where $x_{i}$ is is a non stochastic variable, $\beta_{0}$ and $\beta+{1}$ are regression parameters and $\epsilon_{i}$ is a random error distributed as $\mathcal{N}(0,\sigma^{2})$. Then $y_{i}\quad i \in {1,2...n}$ is random variable distributed as $\mathcal{N}(\beta_{0} + \beta_{1}x_{i},\sigma^{2})$. The objective is to check whether a changepoint occurs after a point k.\\
+\textbf{Null Hypothesis} $H_{0}$:
+$$ H_{0} : \mu_{y_{i}} = \beta_{0}+\beta_{1}x_{i} \tab \forall i \in \{1,2,...n\}$$
+\begin{center}
+    vs
+\end{center}
+\textbf{Alternative Hypothesis} $H_{1}$:\\
+ $$H_{1} : \mu_{y_{i}} = \beta_{0}^{1}+\beta_{1}^{1}x_{i} \tab \forall i \in \{1,...k\} $$
+$$ \& \tab  \mu_{y_{i}} = \beta_{0}^{*}+\beta_{1}^{*}x_{i} \tab \forall i \in \{k+1,...n\}$$
+\textbf{Information Approach}\\
+Under $H_{0}$, The likelihood function is \\
+\begin{equation}
+\begin{split}
+    L_{0}(\beta_{0}, \beta_{1},\sigma^{2}) &= \prod_{i=1}^{n}f_{Y_{i}}(y_{i};\beta_{0},\beta_{1},\sigma^{2})
+                     \cr                 & =  \frac{1}{(\sqrt{2\pi\sigma^{2}})^{n}} exp[-\sum(y_{i} - \beta_{0}-\beta_{1}x_{i})^{2}/2\sigma^{2}]
+\end{split}
+\end{equation}
+From Eq (5) and Eq (6) 
+\begin{equation*}
+    \begin{split}
+\cr    &\hat{\beta}_{1} = \frac{S_{xy}}{S_{xx}}
+\cr    & \hat{\beta}_{0} = \Bar{y} - \hat{\beta}_{1}\Bar{x}
+\cr    & \hat{\sigma}^{2} = \frac{1}{n} \sum (y_{i} - \hat{\beta}_{0} - \hat{\beta}_{1}x_{i})^{2}
+    \end{split}
+\end{equation*}
+MLE under $H_{0}$ is \\
+\begin{equation*}
+    sup L_{0}(\beta_{0},\beta_{1},\sigma^{2}) = \frac{n^{n/2}e^{-n/2}}{\sqrt{2\pi}^{n}[\sum_{i=1}^{n}(y_{i} -\beta_{0} -\beta_{1}x_{i} )^{2}]^{n/2}}
+\end{equation*}
+SIC under $H_{0}$ is
+\begin{equation*}
+    \begin{split}
+       & SIC(n) = -2\log L_{0}(\beta_{0},\beta_{1},\sigma^{2}) + 3\log n
+\cr     &       = n\log 2\pi + n\log(\sum(y_{i} -\beta_{0} -\beta_{1}x_{i})^{2} ) + n + 3\logn - n\log n
+    \end{split}
+\end{equation*}
+Under $H_{1}$ the likelihood function\\
+\begin{equation*}
+    L_{1}(\beta_{0}^{1},\beta_{1}^{1},\beta_{0}^{*},\beta_{1}^{*},\sigma^{2}) = \frac{1}{(\sqrt{2\pi\sigma^{2}})^{n}} exp[-\sum_{i=1}^{k} (y_{i}- \beta_{0}^{1} -\beta_{1}^{1}x_{i})^{2}/2\sigma^{2} ]. exp[-\sum_{i=k+1}^{n}(y_{i}- \beta_{0}^{*} -\beta_{1}^{*}x_{i})^{2}/2\sigma^{2} ] 
+\end{equation*}
+\clearpage
+
+\section{Algorithms}
+\subsection{Binary Segmentation}
 Binary Segmentation is a recursive sequential process to detect change points on a timeseries. It begins by applying a single change point method to the whole data, if a change point is detected on the whole data then as the name suggests the data is bifurcated with the change point acting as the bifurcation. The binary segmentation method is repeated on both the segments to find further change points. \\
-We test if a $\tau$ exists that satisfies 
+We test if a $\tau$ exists that satisfies
 $$C(y_{1:\tau}) + C(y_{\tau + 1: n}) + \beta < C(y_{1:n})$$
 CUMSUM statistic which is the inner product between the vector $(X_{s},...,X_{e})$ and a particular vector of contrast is important for both Binary Segmentation and Wild Binary Segmentation. This acts as a cost function for detection of changepoint
 $$\Tilde{X}^{b}_{s,e} = \sqrt{\frac{e-b}{n(b-s+1)}} \sum_{t=s}^{b} X_{t} - \sqrt{\frac{b-s+1}{n(e-b)}}\sum_{t=b+1}^{e}X_{t}$$ where $s \leq b < e $ with $n = e - s + 1$. 
 
+\textbf{\textit{Assumption 1}}: 
+\begin{itemize}
+    \item The random sequence $\{\epsilon_{t}\}^{T}_{t=1}$ is i.i.d. Gaussian with mean zero and variance 1
+    \item The sequence $\{f_{t}\}^{T}_{t=1}$ is bounded, i.e. $|f_{t}|<\Bar{f} < \infty$ for t = 1,...T.
+\end{itemize}
+\textbf{\textit{Assumption 2}}:\\
+The minimum spacing between changepoint staisfies $min_{i=1,...N+1} |\eta_{i} - \eta_{i-1}|\geq \delta_{T}$, where $\delta_{T} \geq CT^{\Theta}$ for C>0, with $\Theta\leq 1$. In addition, the magnitudes $f^{'}_{i} = |f_{\eta_{i}}-f_{\eta_{i}-1}|$ of the jumps satisfy $min_{i=1,...N} f^{'}_{i} > \underline{f_{T}}$ where $\underline{f_{T}} \geq CT^{-\Bar{\omega}}$, with $\Bar{\omega}\geq 0$. The parameters $\Theta$ and $\Bar{\omega}$ satisfy $\Theta - \frac{\Bar{\omega}}{2}>\frac{3}{4}$
 
 \begin{algorithm}
 \caption{Binary Segmentation}\label{alg:cap}
@@ -68,8 +232,8 @@ $$\Tilde{X}^{b}_{s,e} = \sqrt{\frac{e-b}{n(b-s+1)}} \sum_{t=s}^{b} X_{t} - \sqrt
 \If{$e - s < 1$}
         \State $Stop$
     \Else
-        \State$b_{0} := argmax_{b\in \{s,...,e-1\}} |\Tilde{X_{s,e}^{b}}|$
-        \If{ $|\Tilde{X}^{b_{0}}_{s,e}| > \tau$}
+        \State$b_{0} := \arg \max_{b \in \{s,...,e-1\}} |\tilde{X}_{s,e}^{b}|$
+        \If{ $|\tilde{X}^{b_{0}}_{s,e}| > \tau$}
             \State add $b_0$ to set of estimated change points
             \State BinSeg($s,b_{0},\tau$)
             \State BinSeg($b_{0}+1,e,\tau$)
@@ -79,9 +243,52 @@ $$\Tilde{X}^{b}_{s,e} = \sqrt{\frac{e-b}{n(b-s+1)}} \sum_{t=s}^{b} X_{t} - \sqrt
         \EndIf
 \end{algorithmic}
 \end{algorithm}
-\subsubsection{Optimal Partitioning}
+\textbf{Interpretation}\\
+
+\clearpage
+\subsection{Wild Binary Segmentation}
+Wild Binary segmentation is a modification of Binary Segmentation.
+\begin{algorithm}
+\caption{Wild Binary Segmentation}\label{alg:cap}
+\textbf{function} WildBinSeg($s,e,\tau_{T}$)
+\begin{algorithmic}
+\If{$e - s < 1$}
+        \State $Stop$
+    \Else
+        \State $\mathcal{M}_{s,e}$ := set of those indices m for which $[s_{m},e_{m}] \in F^{M}_{T}$ and $[s_{m},e_{m}] \subseteq [s,e]$
+        \State (Optional: augment $\mathcal{M}_{s,e}:= \mathcal{M}_{s,e}\bigcup \{0\}$), where $[s_{0},e_{0}] = [s,e]$
+        \State $(m_{0},b_{0}): = \arg \max_{m \in \mathcal{M}_{s,e}, b \in \{s_{m}...e_{m}-1\}}|\tilde{X}_{s,e}^{b}|$
+        \State$b_{0} := \arg \max_{b\in \{s,...,e-1\}} | \tilde{X}_{s,e}^{b}|$
+        \If{ $| \tilde{{X}}^{b_{0}}_{s,e}| > \tau_{T}$}
+            \State add $b_0$ to set of estimated change points
+            \State WildBinSeg($s,b_{0},\tau_{T})  $
+            \State WildBinSeg($b_{0}+1,e,\tau_{T}$)
+        \Else
+            \State $Stop $
+            \EndIf
+        \EndIf
+\end{algorithmic}
+\end{algorithm}
+\\
+Where $F^{M}_{T}$ is a set of M random intervals $[s_{m},e_{m}],\tab m = 1,...M$ whose start and endpoints have been drawn (independently with replacement) uniformly from the set $\{1, . . . , T \}$
+\clearpage
+
+\subsection{Optimal Partitioning}
 Optimal Partitioning is a $O(N^{2})$ recursive algorithm that finds the optimum partitions. The aim is to minimise 
-$$\sum_{i = 1}^{m+1} [C(y_{(\tau_{i-1}+1) : \tau_{i}} + \beta] $$
+\begin{equation}
+    \sum_{i = 1}^{m+1} [C(y_{(\tau_{i-1}+1) : \tau_{i}} + \beta]    
+\end{equation}
+thus the method begins by first conditioning on above equation to get the minimum cost of optimal segmentation of data prior to last changepoint plus the cost of segment from last changepoint to current time point. Let $\tau_{s} = \{\tau: 0 = \tau_{0} < \tau_{1}< \cdots < \tau_{m}<\tau_{m+1} = s \}$ where $\tau_{s}$ is the number and location of changepoints for segmenting the data. Let $F(t)$ denote the minimisation for cost of data $y_{1:\tau}$, Then:
+\begin{equation*}
+    \begin{split}
+        F(t)  &  =    \min_{\tau \in '\tau_{t}}\{ \sum_{i=1}^{m+1} [C(y_{(\tau_{i-1}+1) :\tau_{i}) + \beta] }\}
+    \cr        & =   \min_{s\in (o...t-1)} \{\min_{\tau \in \tau_{s}} \sum_{i=1}^{m} [C(y_{(\tau_{i-1}+1) :\tau_{i})} + \beta] + C(y_{(s+1):t}) +\beta\}
+    \cr         & =  \min_{s\in (o...t-1)} \{F(s) + C(y_{(s+1):t}) +\beta\}
+    \end{split}
+\end{equation*}
+\textbf{Interpretation}\\
+The above equations could be interpreted in the following way. The minimum cost of segmenting $y_{1:t} \quad F(t)$ given the last changepoint at time s is the optimal cost for segmenting data upto changepoint s $[F(s)]$ plus cost of segmenting data from $s+1$ to $t$ i.e. $[C(y_{(s+1):t})]$ plus the cost of adding a changepoint $[\beta]$ (or penalty)\\
+
 
 \begin{algorithm}
 \caption{Optimal Partitioning}\label{alg:cap}
@@ -94,7 +301,7 @@ $$\sum_{i = 1}^{m+1} [C(y_{(\tau_{i-1}+1) : \tau_{i}} + \beta] $$
 \For{$ \tau^{*} = {1,...,n}$}
     \begin{enumerate}
         \item Calculate $F(\tau^{*}) = min_{0 \leq \tau < \tau^{*}} [F(\tau) + C(y_{(\tau+1) : \tau^{*}}) + \beta]$
-        \item Let $\tau^{'} = argmin_{0 \leq \tau < \tau^{*}} [F(\tau) + C(y_{(\tau+1) : \tau^{*}}) + \beta]$
+        \item Let $\tau^{'} = \arg\{min_{0 \leq \tau < \tau^{*}} [F(\tau) + C(y_{(\tau+1) : \tau^{*}}) + \beta]\}$
         \item Set $ cp(\tau^{*}) = (cp(\tau^{'}) , \tau)$
     \end{enumerate}
 \EndFor\\
@@ -103,9 +310,29 @@ $$\sum_{i = 1}^{m+1} [C(y_{(\tau_{i-1}+1) : \tau_{i}} + \beta] $$
 \end{algorithm}
 
 
-\subsubsection{Wild Binary Segmentation}
-\subsubsection{PELT}
-\textbf{P}runed \textbf{E}xact \textbf{L}inear \textbf{T}ime Method is an updated version of Optimal Partitioning 
+\textbf{Complexity}\\
+The recursions are solved for $t = 1,2...n$. The cost of solving the recursion for time s is linear in s. So given the calculation due to recursion $1+2+3...+N = \sum_{i=1}^{N}i = \frac{N\cdot N+1}{2}$ making the complexity $O(N^{2})$ in nature.
+\clearpage
+\subsection{Pruned Exact Linear Time (PELT)}
+Pruned Exact Linear Time or PELT Method is an updated version of Optimal Partitioning. Pruning in this context is removing those values of $\tau$ which can never be minima from the minimisation performed in Optimal Partitioning\\
+\textbf{Theorem} When a changepoint is introduced into a sequence of
+observations the cost, $C$, of the sequence reduces. More formally, we assume there
+exists a constant $K$ such that for all $t < s < T$\\
+\begin{equation}
+    C(y_{(t+1) : s}) + C(y_{(s+1) : t}) + K \leq C(y_{(t+1) : T})
+\end{equation}
+Then if
+\begin{equation}
+    F(t) + C(y_{(t+1) : s}) + K \geq F(s)
+\end{equation}
+holds, at a future time $T > s, t$ can never be the optimal last changepoint prior to $T$.\\
+\textbf{Proof} Let Eq (10) be true, then\\
+$$F(t) + C(y_{(t+1) : s}) + K +\beta \geq F(s) + \beta$$
+$$F(t) + C(y_{(t+1) : s}) + K +\beta + C(y_{(s+1) : T}) \geq F(s) + \beta + C(y_{(s+1) : T})$$
+$$F(t) + C(y_{(t+1) : T}) +\beta \geq F(s) + \beta + C(y_{(s+1) : T})$$
+By Eq (9) t cannot be a future minimiser of the sets
+$$S_{T}:= \{F(\tau) + C(y_{(t+1):T}) +\beta ,\tau = 0,1,...T-1,T>s\}$$
+and can be removed from the set $\tau$ for each future step
 \begin{algorithm}
 \caption{PELT}\label{alg:cap}
 
@@ -119,7 +346,7 @@ t \in {1,...,n}$ \\
 \For{$t \in {1,...,n}$}
     \begin{enumerate}
         \item Calculate $F(t) = min_{s\in R_{t}} [F(s) + C(y_{(s+1) : t}) + \beta]$
-        \item Let $cp(t) = argmin_{s\in R_{t}}{[F(t) = min_{s\in R_{t}} [F(s) + C(y_{(s+1) : t}) + \beta]}$
+        \item Let $cp(t) = \arg\{min_{s\in R_{t}}{[F(t) = min_{s\in R_{t}} [F(s) + C(y_{(s+1) : t}) + \beta]}\}$
         \item Let $ m(t) = m(cp(t)) + 1$
         \item Set $rescp(t) = [rescp(cp(t)),cp(t)]$
         \item Set $R_{t+1} = {s \in R_{t} : F(s) + C(y_{(s+1) : t}) < F(t)}$
@@ -134,21 +361,171 @@ t \in {1,...,n}$ \\
     \end{itemize}
 \end{algorithmic}
 \end{algorithm}
+\\
+\textbf{Interpretation}\\
+The interpretation of the method lies in the the theorem. The theorem suggests that if Eq (10) holds true then for any $T > s$ the best segmentation with the most recent changepoint prior to $T$ being at $s$ will be better than any which has this most recent changepoint at $t$. This way the essence of the PELT method is achieved which is removing $\tau$ which can never be minima. Note that almost all cost functions used in practice satisfy Eq (9). \\
+Example, if the cost function is minus the log-likelihood then the constant $K = 0$ and if we take it to be minus a penalised log-likelihood then K would equal the penalisation factor.\\ %%PELT Paper
+\textbf{Computational Complexity of PELT}\\
+Given a data set of $n$ datapoints over positive integer time points and the parameters associated are i.i.d. (independent and identically distributed). Let the parameter be denoted by $\theta$ and the density function be $\pi(\theta)$. The datapoints within a segment are i.i.d. with density $f(y|\theta)$. the cost functions is taken as negative Maximum Log-likelihood
+\begin{equation*}
+    C(y_{(t+1):s}) = -\max_{\theta} \sum_{i=t+1}^{s} \log f(y_{i}|\theta)
+\end{equation*}
+For this loss function, K = 0 for Eq (9), hence pruning in PELT will just depend on the choice of penalty constant $\beta$.\\
+If the changepoint positions are $\tau_{1},\tau_{2}...$, then segment lengths $S_{i} = \tau_{i} - \tau_{i-1}$ where $S_{i}$ are iid.\\
+\textbf{Theorem} Define $\theta^{*}$ to be the value that maximises the expected log-likelihood
+$$\theta^{*} = \arg\max\iint f(y|\theta) f(y|\theta_{0})dy\pi(\theta_{0})d\theta_{0}$$
+Let $\theta_{i}$ be the true parameter associated with the segment containing $y_{i}$ and $\theta^{n}$ be the maximum likelihood estimate for $\theta$ given data $y_{1:n}$ and an assumption of a single segment:
+$$\hat{\theta}_{n} = \arg \max_{\theta} \sum_{i=1}^{n}\log f(y_{i}|\theta)$$
+Then if\\
+$A(1) denoting$
+$$B_{n} = \sum_{i=1}^{n}\left[\log f(y_{i}|\hat{\theta}_{n}) - \log f(y_{i}|\hat{\theta}^{*}) \right]$$
+We have $E[B_{n}] = \mathcal{O}(n)$ and $E([B_{n} - E[B_{n}]]^{4}) = \mathcal{O}(n^{2})$\\
+$A(2)$\\
+$$E[(\log f(Y_{i}|\theta_{i}) - \log f(Y_{i}|\theta^{*}))^{4}] <  \infty$$
+$A(3)$\\
+$$E[S^{4}] < \infty$$
+$A(4)$\\
+$$E[(\log f(Y_{i}|\theta_{i}) - \log f(Y_{i}|\theta^{*}))] >\frac{\beta}{E[S]}$$
+where S is the expected segment length, the expected CPU cost of PELT for analysing n data points is bounded above by $Ln$ for some constant $L < \infty$\\
+\textit{proof in supplementary material}\\
 
-\subsection{Simulation Study}
-In order to study changepoint methods and different algorithms, A simulation of varying length $n = (100,200,...)$ can be created. For the linearly increasing data, $m = \frac{n}{100}$ changepoints are generated. These change points are distributed uniformly across $(30,n-30)$ so that the occurrences are not near the end and the beginning of the data which won't be detected. One of the constraints is that there are at least 30 data points between two consecutive changepoints. 
-\subsubsection{Mean}
+Conditions $(A1)$ and $(A2)$ of Theorem are weak technical conditions. For example, general asymptotic results for maximum likelihood estimation would give $B_{n} = \mathcal{O}_{p}(1)$, and $(A1)$ is a slightly stronger condition which is controlling the probability of $B_{n}$ taking values that are $\mathcal{O}(n^{1/2})$ or greater.\\
+Condition $(A3)$ is needed to control the probability of large segments. One important consequence of $(A3)$ is that the expected number of changepoints will increase linearly with $n$\\
+\clearpage
+\section{Simulation Study}
+In order to study changepoint methods and different algorithms, A simulation of varying length $n = (100,200,...n)$ can be created. For the linearly increasing data, $m = \frac{n}{100}$ changepoints are generated. These change points are distributed uniformly across $(30,n-30)$ so that the occurrences are not near the end and the beginning of the data which won't be detected. One of the constraints is that there are at least 30 data points between two consecutive changepoints. 
+
+\subsection{Mean}
 Given $n$ datapoints $m = \frac{n}{100}$ changepoints are uniformly distributed over a range of $(30,n-30)$.  
-The parameters of the simulated data i.e. mean is Normally distributed $\mu \thicksim \mathcal{N}(0,\frac{log(10)}{2})$ i.e. (mean = 0 and sd = $\frac{log(10)}{2}$ so that $95\%$ data is in the range $[]$. The data is imputed in between the set changepoints and a list of dataset, changepoint locations and respective means in the blocks is returned 
-\subsubsection{Variance}
-Following the same approach as simulation of mean change, $m = \frac{n}{100}$ change points are generated using a uniform distribution in the range $(30,n-30)$ for $n$ data points. Using a log normal distribution with mean 0 and standard deviation $\frac{log(10)}{2}$ $(\sigma \thicksim \mathcal{N}(0,\frac{log(10)}{2}))$ we can generate our standard deviation assuring the values to be positive. After imputing the values between the changepoints we return a list of dataset, changepoint locations and their respective standard deviations. 
+The parameters of the simulated data i.e. mean is Normally distributed $\mu \thicksim \mathcal{N}(0,\frac{\log(10)}{2})$ i.e. (mean = 0 and sd = $\frac{\log(10)}{2}$ so that $95\%$ data is in the range $[0.1,10]$. The data is imputed in between the set changepoints and a list of dataset, changepoint locations and respective means in the blocks is returned 
 
-\subsubsection{MeanVar}
-Following a similar approach to Mean and Variance, In this particular simulation we change the two parameters mean $\mu$ and variance $\sigma^{2}$. Generating $m = \frac{n}{100}$ change points using a uniform distribution in the range $(30,n-30)$ for $n$ data points, $\mu$ and $\sigma$ are generated using lognormal distribution having mean 0 and std $\frac{log(10)}{2}$ i.e. $(\mu. \sigma \thicksim \mathcal{N}(0,\frac{log(10)}{2}))$. Assuring our positive values for mean and variance 
+\begin{algorithm}
+\caption{Simulation of Mean}\label{alg:cap}
+\textbf{Input}: n: number of datapoints\\
+\textbf{Output} A list of datapoints, location of changepoints, parameter values
+\begin{algorithmic}
+\begin{itemize}
+    \item  Let $ m = \frac{n}{100}$
+    \item  Generate m points using uniform distribution $\tau_{1:m} \thicksim \mathcal{U} (n-30,30)$ 
+    \item  Sort $(\tau)$
+\end{itemize}
+     \Ensure Minimum number of datapoints between two consecutive changepoints \tab \tab \tab \tab \quad is 30 i.e $\tau_{i+1} - \tau_{i} = 30$ 
 
+\State Floor($\tau$)
+\State Let x be a list of n length
+\State Generate $m$ datapoints $\mu_{1:m} \thicksim Lognormal(0,\frac{\log(10)}{2})$
+\State $j = 1$
+\While{$j < m$}
+    \State Impute  $x_{\tau_{j} : \tau_{j+1}} \thicksim \mathcal{N}(\mu[j+1],1)$
+    \State j = j+1
+\EndWhile
+\State Impute $x_{1:\tau_{1}} \thicksim \mathcal{N}(\mu_{1},1)$
+\State Impute $x_{\tau_{m}:n} \thicksim \mathcal{N}(\mu_{m},1)$ \\
+\Return $x,\tau,\mu$
+\end{algorithmic}
+\end{algorithm}
 
-\subsection{Trade off in accuracy and number of changepoints}
+The following as an image generated by the above pseudo code
+
+\subsection{Variance}
+Following the same approach as simulation of mean change, $m = \frac{n}{100}$ change points are generated using a uniform distribution in the range $(30,n-30)$ for $n$ data points. Using a log normal distribution with mean 0 and standard deviation $\frac{\log(10)}{2}$ $(\sigma \thicksim \mathcal{N}(0,\frac{\log(10)}{2}))$ we can generate our standard deviation assuring the values to be positive. After imputing the values between the changepoints we return a list of dataset, changepoint locations and their respective standard deviations. 
+
+\begin{algorithm}
+\caption{Simulation of Variance}\label{alg:cap}
+\textbf{Input}: n: number of datapoints\\
+\textbf{Output} A list of datapoints, location of changepoints, parameter values
+\begin{algorithmic}
+\begin{itemize}
+    \item  Let $ m = \frac{n}{100}$
+    \item  Generate m points using uniform distribution $\tau_{1:m} \thicksim \mathcal{U} (n-30,30)$ 
+    \item  Sort $(\tau)$
+\end{itemize}
+     \Ensure Minimum number of datapoints between two consecutive changepoints \tab \tab \tab \tab \quad is 30 i.e $\tau_{i+1} - \tau_{i} = 30$ 
+
+\State Floor($\tau$)
+\State Let x be a list of n length
+\State Generate $m$ datapoints $\sigma_{1:m} \thicksim Lognormal(0,\frac{\log(10)}{2})$
+\State $j = 1$
+\While{$j < m$}
+    \State Impute  $x_{\tau_{j} : \tau_{j+1}} \thicksim \mathcal{N}(0,\sigma_{j+1})$
+    \State j = j+1
+\EndWhile
+\State Impute $x_{1:\tau_{1}} \thicksim \mathcal{N}(0,\sigma_{1})$
+\State Impute $x_{\tau_{m}:n} \thicksim \mathcal{N}(0,\sigma_{m})$ \\
+\Return $x,\tau,\sigma$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{MeanVar}
+Following a similar approach to Mean and Variance, In this particular simulation we change the two parameters mean $\mu$ and variance $\sigma^{2}$. Generating $m = \frac{n}{100}$ change points using a uniform distribution in the range $(30,n-30)$ for $n$ data points, $\mu$ and $\sigma$ are generated using lognormal distribution having mean 0 and std $\frac{\log(10)}{2}$ i.e. $(\mu. \sigma \thicksim \mathcal{N}(0,\frac{\log(10)}{2}))$. Assuring our positive values for mean and variance 
+
+\begin{algorithm}
+\caption{Simulation of Mean and Variance}\label{alg:cap}
+\textbf{Input}: n: number of datapoints\\
+\textbf{Output} A list of datapoints, location of changepoints, parameter values
+\begin{algorithmic}
+\begin{itemize}
+    \item  Let $ m = \frac{n}{100}$
+    \item  Generate m points using uniform distribution $\tau_{1:m} \thicksim \mathcal{U} (n-30,30)$ 
+    \item  Sort $(\tau)$
+\end{itemize}
+     \Ensure Minimum number of datapoints between two consecutive changepoints \tab \tab \tab \tab \quad is 30 i.e $\tau_{i+1} - \tau_{i} = 30$ 
+
+\State Floor($\tau$)
+\State Let x be a list of n length
+\State Generate $m$ datapoints $\mu_{1:m} \thicksim Lognormal(0,\frac{\log(10)}{2})$
+\State Generate $m$ datapoints $\sigma_{1:m} \thicksim Lognormal(0,\frac{\log(10)}{2})$
+\State $j = 1$
+\While{$j < m$}
+    \State Impute  $x_{\tau_{j} : \tau_{j+1}} \thicksim \mathcal{N}(\mu_{j+1},\sigma_{j+1})$
+    \State j = j+1
+\EndWhile
+\State Impute $x_{1:\tau_{1}} \thicksim \mathcal{N}(\mu_{1},\sigma_{1})$
+\State Impute $x_{\tau_{m}:n} \thicksim \mathcal{N}(\mu_{m},\sigma_{m})$ \\
+\Return $x,\tau,\sigma$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Trend}
+
+\begin{algorithm}
+\caption{Simulation of Trend}\label{alg:cap}
+\textbf{Input}: n: number of datapoints\\
+\textbf{Output} A list of datapoints, location of changepoints, parameter values
+\begin{algorithmic}
+\begin{itemize}
+    \item  Let $ m = \frac{n}{100}$
+    \item  Generate m points using uniform distribution $\tau_{1:m} \thicksim \mathcal{U} (n-30,30)$ 
+    \item  Sort $(\tau)$
+\end{itemize}
+     \Ensure Minimum number of datapoints between two consecutive changepoints \tab \tab \tab \tab \quad is 30 i.e $\tau_{i+1} - \tau_{i} = 30$ 
+
+\State Floor($\tau$)
+\State Let x be a list of n length
+\State Generate $m$ datapoints $\sigma \thicksim Lognormal(0,\frac{\log(10)}{2})$
+\State Generate $m$ datapoints $\alpha \thicksim \mathcal{N}(\mu_{1},\sigma_{1})$
+\State Generate $m$ datapoints $\beta \thicksim \mathcal{N}(\mu_{2},\sigma_{2})$
+\State $j = 1$
+\While{$j < m$}
+    \State t = seq(1,$\tau_{j+1} - \tau_{j} + 1$)
+    \State $\psi  = \alpha_{j+1} + \beta_{j+1}t$
+    \State Impute  $x_{\tau_{j} : \tau_{j+1}} \thicksim \mathcal{N}(\psi,\sigma_{j+1})$
+    \State j = j+1
+\EndWhile
+\State Impute $x_{1:\tau_{1}} \thicksim \mathcal{N}(\mu_{1},\sigma_{1})$
+\State Impute $x_{\tau_{m}:n} \thicksim \mathcal{N}(\mu_{m},\sigma_{m})$ \\
+\Return $x,\tau,\sigma$
+\end{algorithmic}
+\end{algorithm}
+
+\section{Trade off in accuracy and number of changepoints}
 An observation upon running the algorithm on the simulated was the number of changepoints being detected was always less than the number of changepoints being made and the accuracy also varies case to case
+
+
+\section{Data Analysis}
+In this section changepoint algorithms are applied upon real datasets and observations are made.
+
+\printindex
 
 
 %%%%%

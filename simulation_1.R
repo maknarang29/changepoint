@@ -39,7 +39,7 @@ simulation_mean <- function(n){
   }
   
   x <- numeric(n)
-  mu<- rlnorm(m,0,log(10)/2)
+  mu<- rnorm(m,0,5)
   tau <- floor(tau)
   
   j = 1
@@ -67,7 +67,7 @@ simulation_meanvar <- function(n){
 
   x <- numeric(n)
   sig <- rlnorm(m,0,log(10)/2)
-  mu<- rlnorm(m,0,log(10)/2)
+  mu<- rnorm(m,0,5)
   tau <- floor(tau)
 
   j = 1
@@ -92,8 +92,8 @@ simulation_trend <- function(n){
 
   x <- numeric(n)
   sig <- rlnorm(m,0,log(10)/2) 
-  alpha <- rnorm(m,0,runif(1,20,50))
-  beta <- rnorm(m,0,runif(1,0.1,1.5))
+  alpha <- rnorm(m,0,runif(1,1,5))
+  beta <- rnorm(m,0,runif(1,0,0.25))
   tau <- floor(tau)
 
   j = 1
