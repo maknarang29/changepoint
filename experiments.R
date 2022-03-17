@@ -200,3 +200,13 @@ plot(trendmodel)
 trendmodel
 trendmodel$trendcpt
 cpts(trendmodel$trendcpt)
+
+
+
+distdata <- simulation_distribution(200)
+distdata
+plot(distdata[[1]])
+abline(v = distdata[[2]])
+
+
+distdata[[3]]

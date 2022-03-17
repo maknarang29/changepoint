@@ -12,12 +12,12 @@ simulation_var <- function(n){
   }
   
   x <- numeric(n)
-  sig <- rlnorm(m,0,log(10)/2)
+  sig <- rlnorm(m+1,0,log(10)/2)
   tau <- floor(tau)
   
   j = 1
   while (j<m) {
-    x[tau[j]:tau[j+1]] = rnorm(tau[j+1] - tau[j]+1,0,sig[j])
+    x[(tau[j]+1):tau[j+1]] = rnorm(tau[j+1] - tau[j],0,sig[j])
     j = j+1
   }
   x[1:tau[1]] = rnorm(tau[1],0,sig[1])
@@ -39,12 +39,12 @@ simulation_mean <- function(n){
   }
   
   x <- numeric(n)
-  mu<- rnorm(m,0,5)
+  mu<- rnorm(m+1,0,2)
   tau <- floor(tau)
   
   j = 1
   while (j<m) {
-    x[tau[j]:tau[j+1]] = rnorm(tau[j+1] - tau[j]+1,mu[j],1)
+    x[(tau[j]+1):tau[j+1]] = rnorm(tau[j+1] - tau[j],mu[j+1],1)
     j = j+1
 }
 
@@ -66,13 +66,13 @@ simulation_meanvar <- function(n){
   }
 
   x <- numeric(n)
-  sig <- rlnorm(m,0,log(10)/2)
-  mu<- rnorm(m,0,5)
+  sig <- rlnorm(m+1,0,log(10)/2)
+  mu<- rnorm(m+1,0,2)
   tau <- floor(tau)
 
   j = 1
   while (j<m) {
-    x[tau[j]:tau[j+1]] = rnorm(tau[j+1] - tau[j]+1,mu[j+1],sig[j+1])
+    x[(tau[j]+1):tau[j+1]] = rnorm(tau[j+1] - tau[j],mu[j+1],sig[j+1])
     j = j+1
   }
 
@@ -100,7 +100,7 @@ simulation_trend <- function(n){
   while (j<m) {
     index <- 1:(tau[j+1] - tau[j]+1)
     mean <- alpha[j+1] + beta[j+1]*index
-    x[tau[j]:tau[j+1]] = rnorm(tau[j+1] - tau[j]+1,mean,sig[j+1])
+    x[(tau[j]+1):tau[j+1]] = rnorm(tau[j+1] - tau[j],mean,sig[j+1])
     j = j+1
   }
 
@@ -123,7 +123,7 @@ simulation_distribution <- function(n){
     tau <- sort(runif(n = m,1,n))
   }
   tau <- floor(tau)
-  dist_ind <- floor(runif(m,1,6))
+  dist_ind <- floor(runif(m,1,3))
   x <- numeric(n)
   for (i in 1:length(dist_ind)){
     if (dist_ind[i] == 1){
@@ -139,7 +139,7 @@ simulation_distribution <- function(n){
         x[tau[i]:tau[i+1]] <- (-1)**sample(1:2,1)*runif(1,8,18)*rnorm(tau[i+1]-tau[i]+1, shape_1,shape_2)
       }
     }
-    else if(dist_ind[i] == 2){
+    else if(dist_ind[i] == 10){
       location<- runif(1,0,10)
       scale <- runif(1,0,10)
       if(i == 1){
@@ -152,7 +152,7 @@ simulation_distribution <- function(n){
         x[tau[i]:tau[i+1]] <- rcauchy(tau[i+1]-tau[i]+1, location,scale)
       }
     }
-    else if(dist_ind[i] == 3){
+    else if(dist_ind[i] == 11){
       df<- runif(1,0,10)
       if(i == 1){
         x[1:tau[1]] <- rchisq(tau[1],df)
@@ -164,7 +164,7 @@ simulation_distribution <- function(n){
         x[tau[i]:tau[i+1]] <- rchisq(tau[i+1]-tau[i]+1, df)
       }
     }
-    else if(dist_ind[i] == 4){
+    else if(dist_ind[i] == 2){
       rate<- runif(1,0,10)
       if(i == 1){
         x[1:tau[1]] <- (-1)**sample(1:2,1)*runif(1,8,18)*rexp(tau[1],rate)
@@ -176,7 +176,7 @@ simulation_distribution <- function(n){
         x[tau[i]:tau[i+1]] <- (-1)**sample(1:2,1)*runif(1,8,18)*rexp(tau[i+1]-tau[i]+1, rate)
       }
     }
-    else if (dist_ind[i] == 5){
+    else if (dist_ind[i] == 3){
       lambda <- runif(1,0,10)
       if(i == 1){
         x[1:tau[1]] <- rpois(tau[1],lambda)
@@ -191,6 +191,7 @@ simulation_distribution <- function(n){
   }
   x[which(x>100)] = rnorm(length(x[x>100]), 0 ,log(10)/2)
   x[which(x< (-100))] = rnorm(length(x[x< (-100)]), 0 ,log(10)/2)
-  return(x)
+  return(list(x,tau,dist_ind))
 }
+
 
