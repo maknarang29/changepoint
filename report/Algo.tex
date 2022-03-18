@@ -9,7 +9,253 @@
 \documentclass{article}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackag%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Welcome to Overleaf --- just edit your LaTeX on the left,
+% and we'll compile it for you on the right. If you open the
+% 'Share' menu, you can invite other users to edit at the same
+% time. See www.overleaf.com/learn for more info. Enjoy!
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass{article}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 \usepackage{amssymb}
+
+\newcommand\tab[1][0.4cm]{\hspace*{#1}}
+\begin{document}
+\begin{algorithm}
+\caption{An algorithm with caption}\label{alg:cap}
+\begin{algorithmic}
+\Require $n \geq 0$
+\Ensure $y = x^n$
+\State $y \gets 1$
+\State $X \gets x$
+\State $N \gets n$
+\While{$N \neq 0$}
+\If{$N$ is even}
+    \State $X \gets X \times X$
+    \State $N \gets \frac{N}{2}$  \Comment{This is a comment}
+\ElsIf{$N$ is odd}
+    \State $y \gets y \times X$
+    \State $N \gets N - 1$
+\EndIf
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+\section{Binary Segmentation}
+\begin{algorithm}
+\caption{Binary Segmentation}\label{alg:cap}
+\textbf{function} BinSeg($s,e,\tau$)
+\begin{algorithmic}
+\If{$e - s < 1$}
+        \State $Stop$
+    \Else
+        \State$b_{0} := \arg \max_{b \in \{s,...,e-1\}} |\tilde{X}_{s,e}^{b}|$
+        \If{ $|\tilde{X}^{b_{0}}_{s,e}| > \tau$}
+            \State add $b_0$ to set of estimated change points
+            \State BinSeg($s,b_{0},\tau$)
+            \State BinSeg($b_{0}+1,e,\tau$)
+        \Else
+            \State $Stop$
+            \EndIf
+        \EndIf
+\end{algorithmic}
+\end{algorithm}
+
+\section{Wild Binary Segmentation}
+\begin{algorithm}
+\caption{Wild Binary Segmentation}\label{alg:cap}
+\textbf{function} WildBinSeg($s,e,\tau_{T}$)
+\begin{algorithmic}
+\If{$e - s < 1$}
+        \State $Stop$
+    \Else
+        \State $\mathcal{M}_{s,e}$ := set of those indices m for which $[s_{m},e_{m}] \subseteq [s,e]$
+        \State (Optional: augment $\mathcal{M}_{s,e}:= \mathcal{M}_{s,e}\bigcup \{0\}$), where $[s_{0},e_{0}] = [s,e]$
+        \State $(m_{0},b_{0}): = \arg \max_{m \in \mathcal{M}_{s,e}, b \in \{s_{m}...e_{m}-1\}}|\tilde{X}_{s,e}^{b}|$
+        \State$b_{0} := \arg \max_{b\in \{s,...,e-1\}} | \tilde{X}_{s,e}^{b}|$
+        \If{ $| \tilde{{X}}^{b_{0}}_{s,e}| > \tau_{T}$}
+            \State add $b_0$ to set of estimated change points
+            \State WildBinSeg($s,b_{0},\tau)  $
+            \State WildBinSeg($b_{0}+1,e,\tau$)
+        \Else
+            \State $Stop $
+            \EndIf
+        \EndIf
+\end{algorithmic}
+\end{algorithm}
+
+
+\section{PELT}
+
+\begin{algorithm}
+\caption{PELT}\label{alg:cap}
+
+\textbf{input}: A data set of form $y_{1:n} = (y_{1},y_{2}...y_{n})$;\\
+\qquad  A cost function $C(\cdot)$\\
+\qquad A penalty $\beta$ and a constant $K$ \\
+\textbf{output} Details of optimal segmentation of $y_{1:t} \quad \forall
+t \in {1,...,n}$ \\
+\tab Let $cp(0) = 0,rescp(0) = 0, F(0) = 0, m(0) = 0 and R_{1} = {0}$
+\begin{algorithmic}
+\For{$t \in {1,...,n}$}
+    \begin{enumerate}
+        \item Calculate $F(t) = min_{s\in R_{t}} [F(s) + C(y_{(s+1) : t}) + \beta]$
+        \item Let $cp(t) = argmin_{s\in R_{t}}{[F(t) = min_{s\in R_{t}} [F(s) + C(y_{(s+1) : t}) + \beta]}$
+        \item Let $ m(t) = m(cp(t)) + 1$
+        \item Set $rescp(t) = [rescp(cp(t)),cp(t)]$
+        \item Set $R_{t+1} = {s \in R_{t} : F(s) + C(y_{(s+1) : t}) < F(t)}$
+    \end{enumerate}
+\EndFor\\
+\Return : 
+    \begin{itemize}
+        \item $rescp(n)$: The changepoints in the optimal segmentation of $y_{1:n} \forall t \in {1,...n}$; 
+        \item $cp(t)$: The most recent changepoint in the optimal segmentation of $y_{1:t}$
+        \item $m(t)$: The number of changepoints in the optimal segmentation of $y_{1:t}$
+        \item $F(t)$: The optimal cost value of the optimal segmentation of $y_{1:t}$
+    \end{itemize}
+\end{algorithmic}
+\end{algorithm}
+
+
+\section{Optimal Partitioning}
+
+\begin{algorithm}
+\caption{Optimal Partitioning}\label{alg:cap}
+
+\textbf{input}: A data set of form $y_{1:n} = (y_{1},y_{2}...y_{n})$;\\
+\qquad  A cost function $C(\cdot)$\\
+\qquad A penalty constant $\beta$ independent of number and location of changepoint\\
+\textbf{Initialise}: Let n = length of data and set $F(0) = -\beta, cp(0) = NULL$\\
+\begin{algorithmic}
+\For{$ \tau^{*} = {1,...,n}$}
+    \begin{enumerate}
+        \item Calculate $F(\tau^{*}) = min_{0 \leq \tau < \tau^{*}} [F(\tau) + C(y_{(\tau+1) : \tau^{*}}) + \beta]$
+        \item Let $\tau^{'} = argmin_{0 \leq \tau < \tau^{*}} [F(\tau) + C(y_{(\tau+1) : \tau^{*}}) + \beta]$
+        \item Set $ cp(\tau^{*}) = (cp(\tau^{'} , \tau^{'}))$
+    \end{enumerate}
+\EndFor\\
+\Return : The changepoints recorded in $cp(n)$ 
+\end{algorithmic}
+\end{algorithm}
+
+
+\section{Simulation}
+
+\begin{algorithm}
+\caption{Simulation of Mean}\label{alg:cap}
+\textbf{Input}: n: number of datapoints\\
+\textbf{Output} A list of datapoints, location of changepoints, parameter values
+\begin{algorithmic}
+\begin{itemize}
+    \item  Let $ m = \frac{n}{100}$
+    \item  Generate m points using uniform distribution $\tau_{1:m} \thicksim \mathcal{U} (n-30,30)$ 
+    \item  Sort $(\tau)$
+\end{itemize}
+     \Ensure Minimum number of datapoints between two consecutive changepoints \tab \tab \tab is 30 i.e $\tau_{i+1} - \tau_{i} = 30$ 
+
+\State Floor($\tau$)
+\State Let x be a list of n length
+\State Generate $m$ datapoints $\mu_{1:m} \thicksim Lognormal(0,\frac{\log(10)}{2})$
+\State $j = 1$
+\While{$j < m$}
+    \State Impute  $x_{\tau_{j} : \tau_{j+1}} \thicksim \mathcal{N}(\mu[j+1],1)$
+    \State j = j+1
+\EndWhile
+\State Impute $x_{1:\tau_{1}} \thicksim \mathcal{N}(\mu_{1},1)$
+\State Impute $x_{\tau_{m}:n} \thicksim \mathcal{N}(\mu_{m},1)$ \\
+\Return $x,\tau,\mu$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Simulation of Variance}\label{alg:cap}
+\textbf{Input}: n: number of datapoints\\
+\textbf{Output} A list of datapoints, location of changepoints, parameter values
+\begin{algorithmic}
+\begin{itemize}
+    \item  Let $ m = \frac{n}{100}$
+    \item  Generate m points using uniform distribution $\tau_{1:m} \thicksim \mathcal{U} (n-30,30)$ 
+    \item  Sort $(\tau)$
+\end{itemize}
+     \Ensure Minimum number of datapoints between two consecutive changepoints \tab \tab \tab is 30 i.e $\tau_{i+1} - \tau_{i} = 30$ 
+
+\State Floor($\tau$)
+\State Let x be a list of n length
+\State Generate $m$ datapoints $\sigma_{1:m} \thicksim Lognormal(0,\frac{\log(10)}{2})$
+\State $j = 1$
+\While{$j < m$}
+    \State Impute  $x_{\tau_{j} : \tau_{j+1}} \thicksim \mathcal{N}(0,\sigma_{j+1})$
+    \State j = j+1
+\EndWhile
+\State Impute $x_{1:\tau_{1}} \thicksim \mathcal{N}(0,\sigma_{1})$
+\State Impute $x_{\tau_{m}:n} \thicksim \mathcal{N}(0,\sigma_{m})$ \\
+\Return $x,\tau,\sigma$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Simulation of Mean and Variance}\label{alg:cap}
+\textbf{Input}: n: number of datapoints\\
+\textbf{Output} A list of datapoints, location of changepoints, parameter values
+\begin{algorithmic}
+\begin{itemize}
+    \item  Let $ m = \frac{n}{100}$
+    \item  Generate m points using uniform distribution $\tau_{1:m} \thicksim \mathcal{U} (n-30,30)$ 
+    \item  Sort $(\tau)$
+\end{itemize}
+     \Ensure Minimum number of datapoints between two consecutive changepoints \tab \tab \tab is 30 i.e $\tau_{i+1} - \tau_{i} = 30$ 
+
+\State Floor($\tau$)
+\State Let x be a list of n length
+\State Generate $m$ datapoints $\mu_{1:m} \thicksim Lognormal(0,\frac{\log(10)}{2})$
+\State Generate $m$ datapoints $\sigma_{1:m} \thicksim Lognormal(0,\frac{\log(10)}{2})$
+\State $j = 1$
+\While{$j < m$}
+    \State Impute  $x_{\tau_{j} : \tau_{j+1}} \thicksim \mathcal{N}(\mu_{j+1},\sigma_{j+1})$
+    \State j = j+1
+\EndWhile
+\State Impute $x_{1:\tau_{1}} \thicksim \mathcal{N}(\mu_{1},\sigma_{1})$
+\State Impute $x_{\tau_{m}:n} \thicksim \mathcal{N}(\mu_{m},\sigma_{m})$ \\
+\Return $x,\tau,\sigma$
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}
+\caption{Simulation of Trend}\label{alg:cap}
+\textbf{Input}: n: number of datapoints\\
+\textbf{Output} A list of datapoints, location of changepoints, parameter values
+\begin{algorithmic}
+\begin{itemize}
+    \item  Let $ m = \frac{n}{100}$
+    \item  Generate m points using uniform distribution $\tau_{1:m} \thicksim \mathcal{U} (n-30,30)$ 
+    \item  Sort $(\tau)$
+\end{itemize}
+     \Ensure Minimum number of datapoints between two consecutive changepoints \tab \tab \tab is 30 i.e $\tau_{i+1} - \tau_{i} = 30$ 
+
+\State Floor($\tau$)
+\State Let x be a list of n length
+\State Generate $m$ datapoints $\sigma \thicksim Lognormal(0,\frac{\log(10)}{2})$
+\State Generate $m$ datapoints $\alpha \thicksim \mathcal{N}(\mu_{1},\sigma_{1})$
+\State Generate $m$ datapoints $\beta \thicksim \mathcal{N}(\mu_{2},\sigma_{2})$
+\State $j = 1$
+\While{$j < m$}
+    \State t = seq(1,$\tau_{j+1} - \tau_{j} + 1$)
+    \State $\psi  = \alpha_{j+1} + \beta_{j+1}t$
+    \State Impute  $x_{\tau_{j} : \tau_{j+1}} \thicksim \mathcal{N}(\psi,\sigma_{j+1})$
+    \State j = j+1
+\EndWhile
+\State Impute $x_{1:\tau_{1}} \thicksim \mathcal{N}(\mu_{1},\sigma_{1})$
+\State Impute $x_{\tau_{m}:n} \thicksim \mathcal{N}(\mu_{m},\sigma_{m})$ \\
+\Return $x,\tau,\sigma$
+\end{algorithmic}
+\end{algorithm}
+
+%https://docs.displayr.com/wiki/Information_Criteria#:~:text=An%20information%20criterion%20is%20a,the%20complexity%20of%20the%20model.
+\end{document}e{amssymb}
 
 \newcommand\tab[1][0.4cm]{\hspace*{#1}}
 \begin{document}
