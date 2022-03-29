@@ -1,10 +1,49 @@
 library(EnvCpt)
 
+set.seed(5)
 ## Normal distribution with varied mean
-x1 <- rnorm(100,mean = (1:100)/20, 1)
-x2 <- rnorm(100, mean = (100:1)/20,1)
+mu <- runif(2,0,5)
+x1 <- rnorm(200,mean = mu[1], 1)
+x2 <- rnorm(200, mean = mu[2],1)
 x <- c(x1,x2)
 plot(x)
+jpeg("PLOTS/example/mean_change.jpg")
+plot(cpt.mean(x,method = "BinSeg"),xlab='x',ylab='y')
+dev.off()
+jpeg("618c23e2831e06f6b366e924/example/mean_change.jpg")
+plot(cpt.mean(x,method = "BinSeg"),xlab='x',ylab='y')
+dev.off()
+mu
+## Normal Distribution with varied variance
+sigma <- rlnorm(2,0,log(10)/2)
+x1 <- rnorm(200,mean = 0,sigma[2])
+x2 <- rnorm(200, mean = 0,sigma[1])
+x <- c(x1,x2)
+plot(x)
+jpeg("PLOTS/example/variance_change.jpg")
+jpeg("618c23e2831e06f6b366e924/example/variance_change.jpg")
+plot(cpt.var(x,method="BinSeg"),xlab = "x",ylab="y")
+dev.off()
+dev.off()
+sigma
+
+
+## Normal Distribution with varied mean and variance
+mu <- runif(2,0,5)
+sigma <- rlnorm(2,0,log(10)/2)
+x1 <- rnorm(200,mean = mu[1], sigma[1])
+x2 <- rnorm(200, mean = mu[2],sigma[2])
+x <- c(x1,x2)
+plot(x)
+jpeg("PLOTS/example/meanvar_change.jpg")
+plot(cpt.meanvar(x,method = "BinSeg"),xlab='x',ylab='y')
+dev.off()
+jpeg("618c23e2831e06f6b366e924/example/meanvar_change.jpg")
+plot(cpt.meanvar(x,method = "BinSeg"),xlab='x',ylab='y')
+dev.off()
+mu
+sigma
+
 
 ## Normal Distribution with varied mean and variance
 
@@ -39,7 +78,12 @@ plot(fit$trendcpt)
 x1 <- rpois(100,1.5*(1:100)**2)+rnorm(100)**ceiling(runif(1,1,15))
 x2 <- rpois(100,1.5*(100:1)**2)+rnorm(100)**ceiling(runif(1,1,15))
 x <- c(x1,x2)
-plot(x)
+set.seed(4)
+jpeg("PLOTS/example/distribution.jpg")
+plot(c(rnorm(200,0,5),rpois(200,14)),xlab='x',ylab='y',sub="Change in Distribution")
+dev.off()
+?rpois
+x1 <- rnorm(100,)
 
 
 

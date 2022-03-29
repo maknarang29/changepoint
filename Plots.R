@@ -140,12 +140,48 @@ meanvartpPELT<- truepos(cpts(meanvarmodel_PELT),meanvardata[[2]])
 meanvartpBinSeg<- truepos(cpts(meanvarmodel_binseg),meanvardata[[2]])
 
 
-tplistPELT<-c()
-tplistBinSeg<-c()
-fplistPELT<-c()
-fplistBinSeg<-c()
-undetectedlist<- c()
-acc<-c()
+
+############################################################################
+## variance Simulation
+source("simulation_1.R")
+tplistPELTvariance<-c()
+tplistBinSegvariance<-c()
+fplistPELTvariance<-c()
+fplistBinSegvariance<-c()
+
+samplesizes <- floor(runif(100,2,25))
+samplesizes <- samplesizes*100
+for (i in seq(1,100)){
+    tp<-0
+    data <- simulation_var(samplesizes[i])
+    model_PELT <- cpt.var(data[[1]],method="PELT")
+    #model_binseg <- cpt.variance(data[[1]],method="BinSeg",Q = 50)
+    tplistPELTvariance <- c(tplistPELTvariance,truepos(cpts(model_PELT),data[[2]])) 
+    # fplistPELTvariance <- c(fplistPELTvariance,(ncpts(model_PELT)-truepos(cpts(model_PELT),data[[2]])))
+    # acc <- c(acc,(truepos(cpts(model_PELT),data[[2]])/samplesizes[i]/100))
+}
+mean(tplistPELTvariance/(samplesizes/100))
+
+
+for (i in seq(1,100)){
+    data <- simulation_var(samplesizes[i])
+    #model_PELT <- cpt.variance(data[[1]],method="PELT")
+    model_BinSeg <- cpt.var(data[[1]],method="BinSeg",Q = 50)
+    tplistBinSegmean <- c(tplistBinSegmean,truepos(cpts(model_BinSeg),data[[2]])) 
+    #fplistBinSeg <- c(fplistBinSeg,(ncpts(model_BinSeg)-truepos(cpts(model_BinSeg),data[[2]])))
+    #acc <- c(acc,(truepos(cpts(model_PELT),data[[2]])/samplesizes[i]/100))
+}
+mean(tplistBinSegmean/(samplesizes/100))
+
+
+
+##################################################################################################
+## Mean Simulation
+tplistPELTmean<-c()
+tplistBinSegmean<-c()
+fplistPELTmean<-c()
+fplistBinSegmean<-c()
+
 samplesizes <- floor(runif(100,2,25))
 samplesizes <- samplesizes*100
 for (i in seq(1,100)){
@@ -153,19 +189,81 @@ for (i in seq(1,100)){
     data <- simulation_mean(samplesizes[i])
     model_PELT <- cpt.mean(data[[1]],method="PELT")
     #model_binseg <- cpt.mean(data[[1]],method="BinSeg",Q = 50)
-    tplistPELT <- c(tplistPELT,truepos(cpts(model_PELT),data[[2]])) 
-    fplistPELT <- c(fplistPELT,(ncpts(model_PELT)-truepos(cpts(model_PELT),data[[2]])))
-    acc <- c(acc,(truepos(cpts(model_PELT),data[[2]])/samplesizes[i]/100))
+    tplistPELTmean <- c(tplistPELTmean,truepos(cpts(model_PELT),data[[2]])) 
+    # fplistPELTmean <- c(fplistPELTmean,(ncpts(model_PELT)-truepos(cpts(model_PELT),data[[2]])))
+    # acc <- c(acc,(truepos(cpts(model_PELT),data[[2]])/samplesizes[i]/100))
 }
-mean(tplistPELT/(samplesizes/100))
+mean(tplistPELTmean/(samplesizes/100))
 
 
 for (i in seq(1,100)){
     data <- simulation_mean(samplesizes[i])
     #model_PELT <- cpt.mean(data[[1]],method="PELT")
     model_BinSeg <- cpt.mean(data[[1]],method="BinSeg",Q = 50)
-    tplistBinSeg <- c(tplistBinSeg,truepos(cpts(model_BinSeg),data[[2]])) 
+    tplistBinSegmean <- c(tplistBinSegmean,truepos(cpts(model_BinSeg),data[[2]])) 
     #fplistBinSeg <- c(fplistBinSeg,(ncpts(model_BinSeg)-truepos(cpts(model_BinSeg),data[[2]])))
     #acc <- c(acc,(truepos(cpts(model_PELT),data[[2]])/samplesizes[i]/100))
 }
-mean(tplistBinSeg/(samplesizes/100))
+mean(tplistBinSegmean/(samplesizes/100))
+
+##################################################################################################
+## Meanvar Simulation
+tplistPELTmeanvar<-c()
+tplistBinSegmeanvar<-c()
+fplistPELTmeanvar<-c()
+fplistBinSegmeanvar<-c()
+
+samplesizes <- floor(runif(100,2,25))
+samplesizes <- samplesizes*100
+for (i in seq(1,100)){
+    tp<-0
+    data <- simulation_meanvar(samplesizes[i])
+    model_PELT <- cpt.meanvar(data[[1]],method="PELT")
+    #model_binseg <- cpt.mean(data[[1]],method="BinSeg",Q = 50)
+    tplistPELTmeanvar <- c(tplistPELTmeanvar,truepos(cpts(model_PELT),data[[2]])) 
+    # fplistPELTmeanvar <- c(fplistPELTmeanvar,(ncpts(model_PELT)-truepos(cpts(model_PELT),data[[2]])))
+    # acc <- c(acc,(truepos(cpts(model_PELT),data[[2]])/samplesizes[i]/100))
+}
+mean(tplistPELTmeanvar/(samplesizes/100))
+
+
+for (i in seq(1,100)){
+    data <- simulation_meanvar(samplesizes[i])
+    #model_PELT <- cpt.mean(data[[1]],method="PELT")
+    model_BinSegmeanvar <- cpt.meanvar(data[[1]],method="BinSeg",Q = 50)
+    tplistBinSegmeanvar <- c(tplistBinSegmeanvar,truepos(cpts(model_BinSeg),data[[2]])) 
+    #fplistBinSeg <- c(fplistBinSeg,(ncpts(model_BinSeg)-truepos(cpts(model_BinSeg),data[[2]])))
+    #acc <- c(acc,(truepos(cpts(model_PELT),data[[2]])/samplesizes[i]/100))
+}
+mean(tplistBinSegmeanvar/(samplesizes/100))
+
+##################################################################################################
+## trend Simulation
+tplisttrend<-c()
+tplistBinSegmeanvar<-c()
+fplistPELTmeanvar<-c()
+fplistBinSegmeanvar<-c()
+
+samplesizes <- floor(runif(100,2,25))
+samplesizes <- samplesizes*100
+for (i in seq(1,100)){
+    tp<-0
+    data <- simulation_trend(samplesizes[i])
+    model_trend <- envcpt(data[[1]],model="trendcpt")
+    #model_binseg <- cpt.mean(data[[1]],method="BinSeg",Q = 50)
+    tplisttrend <- c(tplisttrend,truepos(cpts(model_trend$trendcpt),data[[2]])) 
+    # fplistPELTmeanvar <- c(fplistPELTmeanvar,(ncpts(model_PELT)-truepos(cpts(model_PELT),data[[2]])))
+    # acc <- c(acc,(truepos(cpts(model_PELT),data[[2]])/samplesizes[i]/100))
+}
+mean(tplisttrend[101:200]/(samplesizes/100))
+
+
+for (i in seq(1,100)){
+    data <- simulation_meanvar(samplesizes[i])
+    #model_PELT <- cpt.mean(data[[1]],method="PELT")
+    model_BinSegmeanvar <- cpt.meanvar(data[[1]],method="BinSeg",Q = 50)
+    tplistBinSegmeanvar <- c(tplistBinSegmeanvar,truepos(cpts(model_BinSeg),data[[2]])) 
+    #fplistBinSeg <- c(fplistBinSeg,(ncpts(model_BinSeg)-truepos(cpts(model_BinSeg),data[[2]])))
+    #acc <- c(acc,(truepos(cpts(model_PELT),data[[2]])/samplesizes[i]/100))
+}
+mean(tplistBinSegmeanvar/(samplesizes/100))
